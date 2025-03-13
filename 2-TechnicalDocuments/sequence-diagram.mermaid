@@ -1,0 +1,125 @@
+sequenceDiagram
+    participant User
+    participant MobileApp
+    participant APIGateway
+    participant AuthService
+    participant NavigationService
+    participant PlotService
+    participant ObservationService
+    participant SyncService
+    participant Database
+    participant FileStorage
+
+    Note over User, FileStorage: Field Observation Workflow
+
+    User->>MobileApp: Launch Application
+    MobileApp->>MobileApp: Check Authentication
+    MobileApp->>APIGateway: Request Authentication (JWT)
+    APIGateway->>AuthService: Validate Credentials
+    AuthService->>Database: Query User Data
+    Database-->>AuthService: Return User Profile
+    AuthService-->>APIGateway: Return JWT Token
+    APIGateway-->>MobileApp: Authentication Successful
+
+    User->>MobileApp: Select Trial
+    MobileApp->>APIGateway: Request Trial Data
+    APIGateway->>PlotService: Get Trial Details
+    PlotService->>Database: Query Trial & Plot Data
+    Database-->>PlotService: Return Trial & Plot Data
+    PlotService-->>APIGateway: Return Trial Data
+    APIGateway-->>MobileApp: Display Trial Information
+    MobileApp->>MobileApp: Cache Trial Data Locally
+
+    User->>MobileApp: Request Navigation to Plots
+    MobileApp->>MobileApp: Get Current GPS Location
+    MobileApp->>APIGateway: Send Current Location
+    APIGateway->>NavigationService: Calculate Optimal Route
+    NavigationService->>Database: Query Unvisited Plots
+    Database-->>NavigationService: Return Plot Locations
+    NavigationService->>NavigationService: Run Route Optimization Algorithm
+    NavigationService-->>APIGateway: Return Optimal Route
+    APIGateway-->>MobileApp: Display Route Plan
+    MobileApp->>MobileApp: Render Route Map
+
+    Note over User, MobileApp: Field Navigation Begins
+
+    MobileApp->>MobileApp: Continuous GPS Monitoring
+    MobileApp->>User: Provide Turn-by-Turn Navigation
+    
+    User->>MobileApp: Arrive at Plot
+    MobileApp->>MobileApp: Verify Location Accuracy
+    MobileApp->>User: Display Plot Details
+
+    User->>MobileApp: Start Observation
+    MobileApp->>APIGateway: Request Observation Form
+    APIGateway->>ObservationService: Get Observation Protocol
+    ObservationService->>Database: Retrieve Metric Definitions
+    Database-->>ObservationService: Return Protocol Data
+    ObservationService-->>APIGateway: Return Observation Form
+    APIGateway-->>MobileApp: Display Observation Form
+
+    alt Blinded Mode
+        MobileApp->>MobileApp: Hide Treatment Information
+    end
+
+    User->>MobileApp: Input Observation Data
+    User->>MobileApp: Capture Images
+    MobileApp->>MobileApp: Store Images Locally
+    User->>MobileApp: Submit Observation
+    
+    MobileApp->>MobileApp: Store Observation Locally
+    MobileApp->>MobileApp: Mark Plot as Observed
+
+    alt Online Mode
+        MobileApp->>APIGateway: Submit Observation Data
+        APIGateway->>ObservationService: Process Observation
+        ObservationService->>Database: Store Observation Data
+        ObservationService-->>APIGateway: Confirm Observation Saved
+        
+        MobileApp->>APIGateway: Upload Images
+        APIGateway->>FileStorage: Store Images
+        FileStorage-->>APIGateway: Return Image URLs
+        APIGateway->>ObservationService: Link Images to Observation
+        ObservationService->>Database: Update Observation Records
+        
+        APIGateway-->>MobileApp: Confirm Sync Complete
+    else Offline Mode
+        MobileApp->>MobileApp: Queue for Later Sync
+    end
+
+    User->>MobileApp: Request Next Plot
+    MobileApp->>NavigationService: Request Next Plot Recommendation
+    NavigationService->>NavigationService: Recalculate Route Based on Current Position
+    NavigationService-->>MobileApp: Provide Next Plot Direction
+    
+    Note over User, FileStorage: Data Synchronization Process
+
+    alt Manual Sync Triggered
+        User->>MobileApp: Request Data Sync
+    else Auto Sync When Connection Available
+        MobileApp->>MobileApp: Detect Network Availability
+    end
+    
+    MobileApp->>APIGateway: Initiate Sync Process
+    APIGateway->>SyncService: Process Sync Request
+    
+    SyncService->>MobileApp: Request Pending Observations
+    MobileApp-->>SyncService: Send Pending Observations
+    SyncService->>ObservationService: Process Observations
+    ObservationService->>Database: Store Observations
+    
+    SyncService->>MobileApp: Request Pending Images
+    MobileApp-->>SyncService: Send Pending Images
+    SyncService->>FileStorage: Store Images
+    FileStorage-->>SyncService: Return Image URLs
+    SyncService->>ObservationService: Update Image References
+    ObservationService->>Database: Update Records
+    
+    SyncService->>Database: Fetch Updated Trial Data
+    Database-->>SyncService: Return Updated Data
+    SyncService-->>APIGateway: Send Updated Trial Data
+    APIGateway-->>MobileApp: Update Local Cache
+    
+    SyncService-->>APIGateway: Confirm Sync Complete
+    APIGateway-->>MobileApp: Display Sync Confirmation
+    MobileApp-->>User: Show Sync Status

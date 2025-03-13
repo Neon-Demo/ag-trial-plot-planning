@@ -1,0 +1,262 @@
+erDiagram
+    ORGANIZATION {
+        uuid id PK
+        string name
+        string description
+        string contact_email
+        string address
+        string logo_url
+        string subscription_tier
+        string subscription_status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    USER {
+        uuid id PK
+        string email
+        string first_name
+        string last_name
+        string password_hash
+        json preferences
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+        timestamp last_login
+    }
+    
+    USER_ORGANIZATION {
+        uuid user_id FK
+        uuid organization_id FK
+        string role
+        timestamp joined_at
+    }
+    
+    TRIAL {
+        uuid id PK
+        uuid organization_id FK
+        string name
+        string description
+        string location
+        string crop_type
+        json metadata
+        string status
+        date start_date
+        date planned_end_date
+        date actual_end_date
+        json design_parameters
+        timestamp created_at
+        timestamp updated_at
+        uuid created_by FK
+    }
+    
+    PLOT {
+        uuid id PK
+        uuid trial_id FK
+        string plot_number
+        uuid treatment_id FK
+        integer replication
+        geometry coordinates
+        point centroid
+        float size_value
+        string size_unit
+        string status
+        date planting_date
+        date emergence_date
+        json metadata
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    TREATMENT {
+        uuid id PK
+        uuid trial_id FK
+        string name
+        string description
+        json factors
+        string color
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    OBSERVATION_PROTOCOL {
+        uuid id PK
+        uuid trial_id FK
+        string name
+        string description
+        string frequency
+        date start_date
+        date end_date
+        json metadata
+        timestamp created_at
+        timestamp updated_at
+        uuid created_by FK
+    }
+    
+    OBSERVATION_METRIC {
+        uuid id PK
+        uuid protocol_id FK
+        string name
+        string type
+        string unit
+        json validation_rules
+        boolean required
+        integer display_order
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    OBSERVATION {
+        uuid id PK
+        uuid plot_id FK
+        uuid protocol_id FK
+        uuid observer_id FK
+        timestamp observation_timestamp
+        point location
+        json weather_data
+        boolean blinded
+        timestamp created_at
+        timestamp updated_at
+        boolean is_synced
+    }
+    
+    OBSERVATION_VALUE {
+        uuid id PK
+        uuid observation_id FK
+        uuid metric_id FK
+        json value
+        string unit
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    IMAGE {
+        uuid id PK
+        uuid plot_id FK
+        uuid observation_id FK
+        uuid metric_id FK
+        string url
+        string thumbnail_url
+        timestamp capture_timestamp
+        point geo_location
+        integer width
+        integer height
+        string file_type
+        integer file_size
+        json metadata
+        timestamp created_at
+        timestamp updated_at
+        boolean is_synced
+    }
+    
+    ROUTE_PLAN {
+        uuid id PK
+        uuid trial_id FK
+        uuid user_id FK
+        string name
+        json plot_sequence
+        linestring route_geometry
+        float total_distance
+        string distance_unit
+        integer estimated_duration
+        string optimization_strategy
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    WEATHER_DATA {
+        uuid id PK
+        uuid trial_id FK
+        date date
+        point location
+        json daily_summary
+        json hourly_data
+        float precipitation
+        float temperature_min
+        float temperature_max
+        float temperature_avg
+        float humidity_avg
+        float wind_speed
+        float wind_direction
+        float gdd
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    NOTE {
+        uuid id PK
+        uuid plot_id FK
+        uuid user_id FK
+        text content
+        timestamp note_timestamp
+        timestamp created_at
+        timestamp updated_at
+        boolean is_synced
+    }
+    
+    EQUIPMENT {
+        uuid id PK
+        uuid organization_id FK
+        string name
+        string type
+        string manufacturer
+        string model
+        json capabilities
+        json integration_settings
+        timestamp last_connected
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    NOTIFICATION {
+        uuid id PK
+        uuid user_id FK
+        string type
+        string title
+        text message
+        string priority
+        boolean read
+        boolean actionable
+        json actions
+        timestamp notification_timestamp
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    SYNC_LOG {
+        uuid id PK
+        uuid user_id FK
+        string device_id
+        string status
+        timestamp started_at
+        timestamp completed_at
+        integer items_processed
+        json error_details
+    }
+    
+    ORGANIZATION ||--o{ USER_ORGANIZATION : "has"
+    USER ||--o{ USER_ORGANIZATION : "belongs to"
+    ORGANIZATION ||--o{ TRIAL : "owns"
+    USER ||--o{ TRIAL : "creates"
+    TRIAL ||--|{ PLOT : "contains"
+    TRIAL ||--|{ TREATMENT : "defines"
+    TREATMENT ||--o{ PLOT : "applied to"
+    TRIAL ||--|{ OBSERVATION_PROTOCOL : "uses"
+    USER ||--o{ OBSERVATION_PROTOCOL : "creates"
+    OBSERVATION_PROTOCOL ||--|{ OBSERVATION_METRIC : "defines"
+    PLOT ||--o{ OBSERVATION : "has"
+    USER ||--o{ OBSERVATION : "records"
+    OBSERVATION_PROTOCOL ||--o{ OBSERVATION : "follows"
+    OBSERVATION ||--|{ OBSERVATION_VALUE : "contains"
+    OBSERVATION_METRIC ||--o{ OBSERVATION_VALUE : "defines"
+    PLOT ||--o{ IMAGE : "has"
+    OBSERVATION ||--o{ IMAGE : "includes"
+    OBSERVATION_METRIC ||--o{ IMAGE : "associated with"
+    TRIAL ||--o{ ROUTE_PLAN : "has"
+    USER ||--o{ ROUTE_PLAN : "creates"
+    TRIAL ||--o{ WEATHER_DATA : "has"
+    PLOT ||--o{ NOTE : "has"
+    USER ||--o{ NOTE : "creates"
+    ORGANIZATION ||--o{ EQUIPMENT : "owns"
+    USER ||--o{ NOTIFICATION : "receives"
+    USER ||--o{ SYNC_LOG : "performs"
