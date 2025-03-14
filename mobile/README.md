@@ -1,86 +1,141 @@
-# Agricultural Trial Plot Planning - Mobile Applications
+# Agricultural Trial Plot Planning Mobile App
 
-This directory contains the native mobile applications for iOS and Android platforms, designed for agricultural field trials and plot data collection. These applications are built with offline-first capabilities to function in remote field locations.
+This is the mobile application component of the Agricultural Trial Plot Planning system. It enables users to manage agricultural trials, navigate field plots, collect observations, and synchronize data with the cloud backend.
 
 ## Features
 
-- **Offline-First Design**: Complete functionality without internet connection
-- **Plot Navigation**: GPS-based guidance to agricultural plots with turn-by-turn directions
-- **Data Collection**: Structured field observations with multiple input types (numeric, categorical, text, images)
-- **Synchronization**: Intelligent data synchronization when connectivity is available
-- **Equipment Integration**: Connect to field measurement devices via Bluetooth
-- **Field-Optimized UI**: Glare-resistant design, large touch targets for gloved operation
+- **Authentication**: Google and Microsoft SSO integration with offline access capability
+- **Trial Management**: View and manage agricultural trials and plots
+- **Map Navigation**: Interactive map for plot location with route optimization
+- **Observation Collection**: Customizable forms for field data collection with image capture
+- **Offline Mode**: Full functionality even without internet connectivity
+- **Data Synchronization**: Seamless sync when connectivity is restored
 
-## Application Structure
+## Technology Stack
+
+- **Framework**: React Native with Expo
+- **State Management**: Redux Toolkit
+- **Navigation**: React Navigation
+- **Storage**: SQLite for local data persistence
+- **Authentication**: Expo Auth Sessions for SSO
+- **Maps**: React Native Maps
+- **API Communication**: Axios with offline queue
+
+## Project Structure
 
 ```
-/mobile
-  /ios               - iOS native application (Swift)
-  /android           - Android native application (Kotlin)
-  /design            - Shared design assets
-  /docs              - Mobile-specific documentation
+mobile/
+├── AgTrialPlotPlanner/
+│   ├── src/
+│   │   ├── core/
+│   │   │   ├── auth/          # Authentication services
+│   │   │   ├── database/      # Local database services
+│   │   │   ├── models/        # TypeScript interfaces and types
+│   │   │   ├── networking/    # API client and network utilities
+│   │   │   ├── store/         # Redux store and slices
+│   │   │   └── utils/         # Utility functions
+│   │   ├── features/
+│   │   │   ├── authentication/ # Authentication screens
+│   │   │   ├── home/          # Home screen
+│   │   │   ├── plots/         # Plot management screens
+│   │   │   ├── observations/  # Observation screens
+│   │   │   ├── map/           # Map and navigation screens
+│   │   │   └── settings/      # Settings screens
+│   │   └── navigation/        # Navigation configuration
+│   ├── assets/                # Images and assets
+│   ├── App.tsx               # Main app component
+│   └── ...
+└── docs/                     # Documentation
 ```
-
-## Architecture
-
-Both applications follow similar clean architecture principles:
-
-1. **Presentation Layer**: UI components and view models
-2. **Domain Layer**: Business logic and use cases
-3. **Data Layer**: Repositories and data sources (API and local)
-4. **Core Services**: Authentication, database, networking, etc.
-
-## Authentication
-
-Both applications support:
-- Google SSO integration
-- Microsoft SSO integration
-- Demo login mechanism for testing
-- Offline authentication for field use
-
-## Key Components Implemented
-
-### iOS (Swift)
-- SwiftUI-based UI implementation
-- Core authentication flows
-- Offline database with SQLite
-- Network service with error handling
-- Field mode optimizations
-- JWT token management
-
-### Android (Kotlin)
-- Jetpack Compose UI implementation
-- Clean architecture with MVVM pattern
-- Authentication flows
-- Dependency injection with Hilt
-- Network connectivity monitoring
-- Field mode optimizations
-
-## Field Mode Features
-
-Both applications include special field mode features:
-- High-contrast display for direct sunlight
-- Battery optimization settings
-- Large touch targets for gloved operation
-- Screen timeout prevention during active use
-- Offline data collection and syncing
 
 ## Getting Started
 
-See the platform-specific README files:
-- [iOS README](/ios/README.md)
-- [Android README](/android/README.md)
+### Prerequisites
 
-## Implementation Status
+- Node.js (v14 or later)
+- npm or yarn
+- iOS: XCode and CocoaPods
+- Android: Android Studio and Android SDK
 
-This is a starter implementation focusing on the core architecture and authentication flows. The following key components are ready for further development:
+### Installation
 
-- [x] Project structure and architecture
-- [x] Authentication system
-- [x] Offline database design
-- [x] Network connectivity handling
-- [x] Field mode optimizations
-- [ ] Plot navigation (partial)
-- [ ] Data collection screens (partial)
-- [ ] Synchronization system (framework only)
-- [ ] Equipment integration (planned)
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/ag-trial-plot-planning.git
+   cd ag-trial-plot-planning/mobile/AgTrialPlotPlanner
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   # or
+   yarn
+   ```
+
+3. Configure environment variables:
+   - Copy `.env.example` to `.env` and update with your configuration
+
+4. Start the development server:
+   ```
+   npm start
+   # or
+   yarn start
+   ```
+
+5. Run on a device or emulator:
+   ```
+   # For iOS
+   npm run ios
+   # or
+   yarn ios
+
+   # For Android
+   npm run android
+   # or
+   yarn android
+   ```
+
+## Development
+
+### Authentication Setup
+
+To configure the authentication:
+
+1. Create OAuth applications in Google Cloud Console and Microsoft Azure
+2. Update the client IDs in `src/core/auth/AuthService.ts`
+3. Configure the redirect URIs in your OAuth providers
+
+### Offline Mode
+
+The app is designed to work offline:
+
+- All data is stored locally in SQLite
+- API requests are queued when offline
+- Synchronization happens automatically when connectivity is restored
+
+### Testing
+
+Run tests with:
+
+```
+npm test
+# or
+yarn test
+```
+
+## App Architecture
+
+The application follows a feature-based organization with Redux for state management:
+
+- **Redux Slices**: Feature-specific state management
+- **Services**: Core functionality implemented as services
+- **Screen Components**: Presentation components for UI
+- **Navigation**: Stack and tab-based navigation
+
+## Contributing
+
+Please read [CONTRIBUTING.md](../CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
