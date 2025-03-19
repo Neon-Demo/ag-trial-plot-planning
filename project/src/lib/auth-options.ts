@@ -5,16 +5,26 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
-    MicrosoftProvider({
-      clientId: process.env.MICROSOFT_CLIENT_ID || "",
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET || "",
-      tenantId: process.env.MICROSOFT_TENANT_ID,
-    }),
-    // Demo login provider - only for development
+    // Only add Google provider if credentials are provided
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+    // Only add Microsoft provider if credentials are provided
+    ...(process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET
+      ? [
+          MicrosoftProvider({
+            clientId: process.env.MICROSOFT_CLIENT_ID,
+            clientSecret: process.env.MICROSOFT_CLIENT_SECRET, 
+            tenantId: process.env.MICROSOFT_TENANT_ID,
+          }),
+        ]
+      : []),
+    // Demo login provider - always available if enabled
     CredentialsProvider({
       name: "Demo Account",
       credentials: {
@@ -22,8 +32,9 @@ export const authOptions: NextAuthOptions = {
         role: { label: "Role", type: "select", options: ["admin", "researcher", "field-technician"] }
       },
       async authorize(credentials) {
-        // Only allow in development or if demo mode is explicitly enabled
-        if (process.env.NODE_ENV !== "development" && process.env.ALLOW_DEMO_LOGIN !== "true") {
+        // Allow in any environment when demo mode is explicitly enabled
+        if (process.env.ALLOW_DEMO_LOGIN !== "true" && process.env.NODE_ENV !== "development") {
+          console.log("Demo login disabled: ALLOW_DEMO_LOGIN not set to true and not in development mode");
           return null;
         }
 
@@ -86,6 +97,9 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET || 
+    (process.env.NODE_ENV === "production" 
+      ? undefined  // Will cause NextAuth to throw an error in production if not set
+      : "DEVELOPMENT_SECRET_DO_NOT_USE_IN_PRODUCTION"),
+  debug: process.env.NODE_ENV === "development" || process.env.DEBUG_AUTH === "true",
 };
