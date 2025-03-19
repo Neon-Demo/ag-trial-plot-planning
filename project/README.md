@@ -151,6 +151,49 @@ For precise control over the build process:
 
 ### Deployment Options
 
+#### AWS Amplify Deployment
+
+For AWS Amplify deployment:
+
+1. **Use the setup script to generate environment variables:**
+   ```bash
+   # Run the helper script
+   ./scripts/setup-amplify.sh
+   ```
+   
+   Or manually configure these environment variables in Amplify console:
+   - `NEXTAUTH_SECRET` - Set to a strong random string (critical!)
+   - `NEXTAUTH_URL` - Set to your Amplify app URL (e.g., https://main.d123abc456def.amplifyapp.com)
+   - `ALLOW_DEMO_LOGIN` - Set to "true"
+   - `NODE_OPTIONS` - Set to "--max_old_space_size=4096" (prevents memory issues)
+
+2. **Build settings:**
+   - Build command: `npm run build:demo`
+   - Output directory: `.next`
+   - OR use the provided `amplify.yml` file in the repository root
+
+3. **Advanced settings:**
+   - Select "YES" for "Always build from the latest commit in production branch" 
+
+> **IMPORTANT**: For Amplify deployment, make sure NEXTAUTH_URL exactly matches your actual deployed URL!
+
+#### Troubleshooting AWS Amplify Errors
+
+If you're still seeing server errors:
+
+1. Visit `/debug` on your deployed site to check environment variables and authentication status.
+
+2. Check common issues:
+   - `NEXTAUTH_URL` must match your Amplify URL *exactly* (including https://)
+   - `NEXTAUTH_SECRET` must be set (generate with `openssl rand -base64 32`)
+   - Verify redirects in Amplify for the app to handle client-side routing
+
+3. If seeing a digest error (e.g., "Digest: 3301485491"), add these rewrites to Amplify:
+   ```
+   </^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>
+   /index.html
+   ```
+
 #### Docker Deployment
 
 The project includes a Dockerfile for easy deployment to container services:

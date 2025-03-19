@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - echo "Installing dependencies..."
+            - npm install --no-package-lock
+            # Skip database packages in demo mode
+            - if [ "$DATABASE_URL" != "" ]; then npm install @auth/prisma-adapter@latest --no-package-lock; fi
+        build:
+          commands:
+            # Use demo build if no database URL
+            - if [ "$DATABASE_URL" != "" ]; then npm run build; else ALLOW_DEMO_LOGIN=true npm run build:demo; fi
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: project
