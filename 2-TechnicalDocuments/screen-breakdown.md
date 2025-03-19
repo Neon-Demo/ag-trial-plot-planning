@@ -155,6 +155,7 @@
   - Status indicators
   - Schedule visualization
   - Resource allocation
+  - Dashboard should show the first few rows of the detail in a quick view format.
 
 - **Trial Setup Wizard**
   - Step-by-step trial creation

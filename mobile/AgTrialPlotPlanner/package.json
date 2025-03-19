@@ -13,11 +13,11 @@
     "clean": "expo doctor --fix-dependencies"
   },
   "dependencies": {
+    "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "@reduxjs/toolkit": "^2.0.1",
-    "@react-native-community/netinfo": "11.4.1",
     "axios": "^1.6.2",
     "expo": "~52.0.0",
     "expo-auth-session": "~6.0.3",
@@ -45,6 +45,7 @@
     "@types/react-redux": "^7.1.33",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
+    "eas-cli": "^15.0.15",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -56,11 +57,17 @@
   "private": true,
   "expo": {
     "install": {
-      "exclude": ["react-native-maps", "react-native-elements"]
+      "exclude": [
+        "react-native-maps",
+        "react-native-elements"
+      ]
     },
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "exclude": ["react-native-maps", "react-native-elements"]
+        "exclude": [
+          "react-native-maps",
+          "react-native-elements"
+        ]
       }
     }
   },

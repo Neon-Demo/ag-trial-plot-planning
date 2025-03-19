@@ -1,4 +1,22 @@
 {
   "name": "AgTrialPlotPlanner",
-  "slug": "AgTrialPlotPlanner"
+  "slug": "AgTrialPlotPlanner",
+  "extra": {
+    "eas": {
+      "projectId": "5ab559fc-dfc3-4328-b27b-5912108e9193"
+    }
+  },
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.szewong.AgTrialPlotPlanner",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bcea658b-3651-45ea-929c-9e7aed848124"
+      }
+    }
+  }
 }
