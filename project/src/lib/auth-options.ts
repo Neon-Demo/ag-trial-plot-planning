@@ -2,11 +2,27 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import MicrosoftProvider from "next-auth/providers/azure-ad";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "./db";
+
+// Determine if we're in demo mode
+const isDemoMode = process.env.ALLOW_DEMO_LOGIN === 'true' || process.env.NODE_ENV === 'development';
+const hasDatabaseUrl = !!process.env.DATABASE_URL;
+
+// We'll use this to conditionally add the Prisma adapter
+const getAdapter = () => {
+  // Only use PrismaAdapter if we have a database URL and we're not in demo-only mode
+  if (hasDatabaseUrl && (!isDemoMode || process.env.USE_DB_WITH_DEMO === 'true')) {
+    return PrismaAdapter(prisma);
+  }
+  return undefined; // Fall back to JWT strategy only
+};
 
 export const authOptions: NextAuthOptions = {
+  adapter: getAdapter(),
   providers: [
-    // Only add Google provider if credentials are provided
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    // Only add Google provider if credentials are provided and we have a database
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && hasDatabaseUrl
       ? [
           GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -14,8 +30,8 @@ export const authOptions: NextAuthOptions = {
           }),
         ]
       : []),
-    // Only add Microsoft provider if credentials are provided
-    ...(process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET
+    // Only add Microsoft provider if credentials are provided and we have a database
+    ...(process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET && hasDatabaseUrl
       ? [
           MicrosoftProvider({
             clientId: process.env.MICROSOFT_CLIENT_ID,

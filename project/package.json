@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
-    "@nextui-org/react": "^2.2.9",
+    "@auth/prisma-adapter": "^1.5.0",
+    "@nextui-org/react": "^2.2.9", 
     "@prisma/client": "^5.10.2",
     "framer-motion": "^11.0.6",
     "leaflet": "^1.9.4",
@@ -36,6 +37,7 @@
     "@types/react": "^18.2.58",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.16",
+    "jest-mock-extended": "^3.0.5",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "postcss": "^8.4.32",
