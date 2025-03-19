@@ -15,7 +15,7 @@
     "setup": "npm install && npm run prisma:generate"
   },
   "dependencies": {
-    "@auth/core": "^0.29.0",
+    "@auth/core": "^0.34.2",
     "@nextui-org/react": "^2.2.9",
     "@prisma/client": "^5.10.2",
     "framer-motion": "^11.0.6",
