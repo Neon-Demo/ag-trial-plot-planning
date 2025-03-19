@@ -32,7 +32,7 @@ The system supports:
 
 - Node.js (v18 or later)
 - npm or yarn
-- PostgreSQL database (with PostGIS extension for production)
+- PostgreSQL database (optional when using demo mode)
 
 ### Installation
 
@@ -52,12 +52,29 @@ The system supports:
    cp .env.example .env.local
    ```
 
-4. Start the development server
+4. Start the development server using the provided script
+   ```
+   ./start.sh
+   ```
+   Or manually:
    ```
    npm run dev
    ```
 
 5. Open your browser and navigate to `http://localhost:3000`
+
+### Demo Mode
+
+The application can run in "demo mode" without requiring a PostgreSQL database:
+
+1. Set `ALLOW_DEMO_LOGIN=true` in your environment variables
+2. You can optionally remove the `DATABASE_URL` variable entirely
+3. The demo login will be available with these credentials:
+   - Admin: admin@example.com (role: admin)
+   - Researcher: researcher@example.com (role: researcher)
+   - Field Technician: field-tech@example.com (role: field-technician)
+
+This is particularly useful for AWS deployments where setting up a database might not be desired.
 
 ### Setting up OAuth Providers
 
@@ -94,10 +111,78 @@ The system supports:
 
 ## Available Scripts
 
+- `./start.sh` - Start the development server with proper setup
+- `./deploy.sh` - Prepare the application for AWS deployment
 - `npm run dev` - Start the development server
 - `npm run build` - Build the application for production
 - `npm start` - Start the production server
 - `npm run lint` - Run ESLint
+- `npm run prisma:generate` - Generate Prisma client
+
+## AWS Deployment
+
+To deploy to AWS:
+
+1. Remove package-lock.json from your repository (it's now in .gitignore)
+2. Use the provided `deploy.sh` script to prepare your application:
+   ```bash
+   # For demo-only mode (no database):
+   ./deploy.sh
+
+   # If you want to use a database:
+   INSTALL_DB_DEPS=true ./deploy.sh
+   ```
+
+3. Set the following environment variables in your AWS environment:
+   - `NEXTAUTH_URL` - Your application URL
+   - `NEXTAUTH_SECRET` - A strong random string for JWT encryption
+   - `ALLOW_DEMO_LOGIN=true` - To enable demo mode
+
+No database configuration is required when running in demo mode.
+
+### Specialized Build Commands
+
+For precise control over the build process:
+
+- `npm run build:demo` - Build with demo mode enabled (no database required)
+- `npm run build` - Standard build that requires database configuration
+
+### Troubleshooting AWS Deployment
+
+If you encounter module not found errors:
+1. Make sure `ALLOW_DEMO_LOGIN=true` is set in your environment variables
+2. Set `DATABASE_URL` only if you want to use a real database, otherwise omit it
+3. Use the following buildspec.yml configuration for AWS:
+
+```yaml
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  pre_build:
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+      # Only add database-related packages if needed
+      - if [ "$DATABASE_URL" != "" ]; then npm install @auth/prisma-adapter@latest; fi
+  build:
+    commands:
+      - echo "Building app..."
+      # Use the appropriate build command based on mode
+      - if [ "$DATABASE_URL" != "" ]; then npm run build; else npm run build:demo; fi
+  post_build:
+    commands:
+      - echo "Build completed"
+artifacts:
+  files:
+    - next.config.js
+    - package.json
+    - .next/**/*
+    - public/**/*
+    - node_modules/**/*
+    - .env
+```
 
 ## License
 

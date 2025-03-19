@@ -1,5 +1,29 @@
-import { PrismaClient } from '@prisma/client';
-import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
+// Dynamic imports to handle environments without Prisma
+let PrismaClient: any;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { PrismaClient: ImportedPrismaClient } = require('@prisma/client');
+  PrismaClient = ImportedPrismaClient;
+} catch (error) {
+  console.warn('Failed to import PrismaClient, using mock implementation only:', error);
+  // Create a dummy PrismaClient class if import fails
+  PrismaClient = class MockPrismaClient {};
+}
+
+let mockDeep: any, mockReset: any, DeepMockProxy: any;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mockUtils = require('jest-mock-extended');
+  mockDeep = mockUtils.mockDeep;
+  mockReset = mockUtils.mockReset;
+  DeepMockProxy = mockUtils.DeepMockProxy;
+} catch (error) {
+  console.warn('Failed to import jest-mock-extended, mock capabilities limited:', error);
+  // Create simple mock functions if import fails
+  mockDeep = () => ({});
+  mockReset = () => {};
+  DeepMockProxy = () => {};
+}
 
 // Demo mode mock data
 import { demoUsers } from './demo-data';
@@ -51,7 +75,7 @@ class MockPrismaClient {
 // Singleton pattern for PrismaClient to avoid multiple instances during hot reload
 // Global prevents multiple instances in development
 declare global {
-  var cachedPrisma: PrismaClient | undefined;
+  var cachedPrisma: any;
 }
 
 // Determine if we should use a mock client based on demo mode
@@ -60,18 +84,36 @@ const isDemoMode = () =>
 
 // Create the actual client or mock based on config
 export function createPrismaClient() {
-  if (isDemoMode()) {
+  if (isDemoMode() || !process.env.DATABASE_URL) {
     console.log('Using mock Prisma client for demo mode');
-    return mockDeep<PrismaClient>() as unknown as MockPrismaClient;
+    try {
+      return mockDeep ? (mockDeep() as unknown as MockPrismaClient) : new MockPrismaClient();
+    } catch (error) {
+      console.warn('Error creating mock client, falling back to basic mock:', error);
+      return new MockPrismaClient();
+    }
   }
   
-  console.log('Using real Prisma client');
-  return new PrismaClient();
+  try {
+    console.log('Using real Prisma client');
+    return new PrismaClient();
+  } catch (error) {
+    console.warn('Error creating Prisma client, falling back to mock:', error);
+    return new MockPrismaClient();
+  }
 }
 
 // Use global var for caching during development to prevent connection overload
-export const prisma = global.cachedPrisma || createPrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  global.cachedPrisma = prisma;
+let cachedPrisma: any;
+try {
+  cachedPrisma = global.cachedPrisma || createPrismaClient();
+  
+  if (process.env.NODE_ENV !== 'production') {
+    global.cachedPrisma = cachedPrisma;
+  }
+} catch (error) {
+  console.warn('Error with Prisma client caching, creating new instance:', error);
+  cachedPrisma = createPrismaClient();
 }
+
+export const prisma = cachedPrisma;
