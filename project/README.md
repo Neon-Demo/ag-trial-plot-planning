@@ -2,6 +2,8 @@
 
 A comprehensive web and mobile application for planning agricultural field trials, navigating to plots, and collecting observations.
 
+> **Demo Mode Available**: This application can run without a database when using demo login mode. Great for quick evaluation and testing!
+
 ## Features
 
 - **Trial Planning**: Design and manage agricultural trials with interactive plot layouts
@@ -147,12 +149,63 @@ For precise control over the build process:
 - `npm run build:demo` - Build with demo mode enabled (no database required)
 - `npm run build` - Standard build that requires database configuration
 
+### Deployment Options
+
+#### Docker Deployment
+
+The project includes a Dockerfile for easy deployment to container services:
+
+```bash
+# Build for demo mode (no database needed)
+docker build -t ag-trial-app --build-arg ALLOW_DEMO_LOGIN=true .
+
+# Run the container
+docker run -p 3000:3000 \
+  -e NEXTAUTH_SECRET=your-secret-key \
+  -e NEXTAUTH_URL=http://localhost:3000 \
+  -e ALLOW_DEMO_LOGIN=true \
+  ag-trial-app
+```
+
+For deployment with a real database:
+
+```bash
+# Build with database support
+docker build -t ag-trial-app \
+  --build-arg DATABASE_URL=postgresql://user:password@host/db \
+  --build-arg ALLOW_DEMO_LOGIN=true .
+
+# Run with database connection
+docker run -p 3000:3000 \
+  -e NEXTAUTH_SECRET=your-secret-key \
+  -e NEXTAUTH_URL=http://localhost:3000 \
+  -e DATABASE_URL=postgresql://user:password@host/db \
+  -e ALLOW_DEMO_LOGIN=true \
+  ag-trial-app
+```
+
+#### AWS CodeBuild Deployment
+
+This project includes a ready-to-use AWS buildspec file:
+
+```bash
+# Use the included buildspec file directly in your AWS CodeBuild project
+aws-buildspec.yml
+```
+
+We've provided a full AWS buildspec.yml file that handles both demo mode and database mode automatically. To use it:
+
+1. In AWS CodeBuild, choose "Use a buildspec file"
+2. Set the buildspec name to `aws-buildspec.yml`
+3. Set environment variables:
+   - `ALLOW_DEMO_LOGIN` - Set to "true" (already set in buildspec)
+   - `NEXTAUTH_SECRET` - Set to a strong random string
+   - `NEXTAUTH_URL` - Set to your application URL
+   - `DATABASE_URL` - Only set if you want to use a database (leave blank for demo mode)
+
 ### Troubleshooting AWS Deployment
 
-If you encounter module not found errors:
-1. Make sure `ALLOW_DEMO_LOGIN=true` is set in your environment variables
-2. Set `DATABASE_URL` only if you want to use a real database, otherwise omit it
-3. Use the following buildspec.yml configuration for AWS:
+If you encounter build errors:
 
 ```yaml
 version: 0.2
@@ -163,14 +216,15 @@ phases:
   pre_build:
     commands:
       - echo "Installing dependencies..."
-      - npm install
+      # IMPORTANT: Use npm install instead of npm ci since package-lock.json is gitignored
+      - npm install --no-package-lock
       # Only add database-related packages if needed
-      - if [ "$DATABASE_URL" != "" ]; then npm install @auth/prisma-adapter@latest; fi
+      - if [ "$DATABASE_URL" != "" ]; then npm install @auth/prisma-adapter@latest --no-package-lock; fi
   build:
     commands:
       - echo "Building app..."
       # Use the appropriate build command based on mode
-      - if [ "$DATABASE_URL" != "" ]; then npm run build; else npm run build:demo; fi
+      - if [ "$DATABASE_URL" != "" ]; then npm run build; else ALLOW_DEMO_LOGIN=true npm run build:demo; fi
   post_build:
     commands:
       - echo "Build completed"
@@ -183,6 +237,8 @@ artifacts:
     - node_modules/**/*
     - .env
 ```
+
+> **IMPORTANT**: AWS CodeBuild typically uses `npm ci` by default, which requires a package-lock.json file. Since we're ignoring package-lock.json in git, make sure to explicitly set the install command to `npm install` in your AWS build configuration.
 
 ## License
 

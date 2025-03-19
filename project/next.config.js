@@ -5,6 +5,8 @@ const nextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com', 'graph.microsoft.com'],
   },
+  // Enable standalone output for Docker deployments
+  output: 'standalone',
   // Special handling for demo mode - provide mocks for database-related packages
   webpack: (config, { isServer, dev }) => {
     // If we're running in demo mode, replace database packages with mocks
