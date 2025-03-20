@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { DEMO_USERS } from "./demo-data";
+import { UserRole } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -28,12 +29,15 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          // Return the user object
+          // Convert string role to UserRole enum
+          const userRole = user.role as UserRole;
+          
+          // Return the user object with properly typed role
           return {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role,
+            role: userRole,
             image: user.image,
             organizationId: user.organizationId
           };
@@ -78,7 +82,7 @@ export const authOptions: NextAuthOptions = {
       // Copy token properties to the session
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as UserRole;
         session.user.organizationId = token.organizationId as string;
       }
       return session;

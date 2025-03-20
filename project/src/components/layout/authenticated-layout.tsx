@@ -342,8 +342,10 @@ export default function AuthenticatedLayout({
                 <div className="text-xl font-semibold text-gray-900">
                   {pathname === "/dashboard"
                     ? "Dashboard"
-                    : pathname.split("/").pop()?.charAt(0).toUpperCase() +
-                      pathname.split("/").pop()?.slice(1)}
+                    : pathname.split("/").pop() 
+                      ? pathname.split("/").pop()!.charAt(0).toUpperCase() + 
+                        pathname.split("/").pop()!.slice(1)
+                      : "Page"}
                 </div>
               </div>
             </div>

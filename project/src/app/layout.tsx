@@ -4,7 +4,24 @@ import "./globals.css";
 import AuthProvider from "@/lib/auth-provider";
 import ToastProvider from "@/components/toast-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+// Configure Inter font with fallbacks and preloading disabled
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  fallback: [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    'sans-serif'
+  ]
+});
 
 export const metadata: Metadata = {
   title: "Agricultural Trial Plot Planning",

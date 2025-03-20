@@ -1,11 +1,12 @@
 // This file contains mock data for demonstration purposes
+import { UserRole } from "@prisma/client";
 
 export const DEMO_USERS = [
   {
     id: "1",
     name: "Demo Admin",
     email: "admin@example.com",
-    role: "ADMIN",
+    role: UserRole.ADMIN,
     organizationId: "1",
     image: "https://ui-avatars.com/api/?name=Admin+User&background=2a9d8f&color=fff",
   },
@@ -13,7 +14,7 @@ export const DEMO_USERS = [
     id: "2",
     name: "Demo Researcher",
     email: "researcher@example.com",
-    role: "RESEARCHER",
+    role: UserRole.RESEARCHER,
     organizationId: "1",
     image: "https://ui-avatars.com/api/?name=Demo+Researcher&background=e9c46a&color=fff",
   },
@@ -21,7 +22,7 @@ export const DEMO_USERS = [
     id: "3",
     name: "Demo Field Tech",
     email: "fieldtech@example.com",
-    role: "FIELD_TECHNICIAN",
+    role: UserRole.FIELD_TECHNICIAN,
     organizationId: "1",
     image: "https://ui-avatars.com/api/?name=Field+Technician&background=e76f51&color=fff",
   },

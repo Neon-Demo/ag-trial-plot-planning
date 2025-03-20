@@ -1,9 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function ErrorPage() {
+// Component with searchParams inside Suspense
+function ErrorPageContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -46,5 +48,18 @@ export default function ErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component that wraps with Suspense
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <ErrorPageContent />
+    </Suspense>
   );
 }
