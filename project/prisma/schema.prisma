@@ -10,50 +10,126 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          String    @default("user") // user, admin, researcher, field-technician
-  
-  // Relationships
-  organizations        OrganizationMember[]
-  trials               Trial[]
-  observations         Observation[]
-  accounts             Account[]
-  sessions             Session[]
+// Enums
+enum UserRole {
+  ADMIN
+  RESEARCHER
+  FIELD_TECHNICIAN
 }
 
+enum TrialStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  TRIAL
+  EXPIRED
+}
+
+// Models
+model Organization {
+  id                 String             @id @default(uuid())
+  name               String
+  description        String?
+  contactEmail       String?
+  address            String?
+  logoUrl            String?
+  subscriptionTier   SubscriptionTier   @default(FREE)
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  users            UserOrganization[]
+  trials           Trial[]
+  equipments       Equipment[]
+
+  @@map("organizations")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(FIELD_TECHNICIAN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?
+  isActive      Boolean   @default(true)
+  preferences   Json?     @default("{}")
+
+  // Relations
+  accounts           Account[]
+  sessions           Session[]
+  organizations      UserOrganization[]
+  createdTrials      Trial[]                  @relation("TrialCreatedBy")
+  createdProtocols   ObservationProtocol[]    @relation("ProtocolCreatedBy")
+  observations       Observation[]            @relation("Observations")
+  routePlans         RoutePlan[]              @relation("RoutePlanCreatedBy")
+  notes              Note[]                   @relation("NoteCreatedBy")
+  notifications      Notification[]           @relation("NotificationReceiver")
+  syncLogs           SyncLog[]                @relation("SyncLogUser")
+
+  @@map("users")
+}
+
+model UserOrganization {
+  userId         String
+  organizationId String
+  role           String      @default("member")
+  joinedAt       DateTime    @default(now())
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, organizationId])
+  @@map("user_organizations")
+}
+
+// NextAuth Models
 model Account {
-  id                 String   @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model VerificationToken {
@@ -62,238 +138,304 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
-model Organization {
-  id          String    @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  // Relationships
-  members     OrganizationMember[]
-  trials      Trial[]
-}
-
-model OrganizationMember {
-  id             String       @id @default(cuid())
-  organizationId String
-  userId         String
-  role           String       // admin, member, etc.
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  
-  // Relationships
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([organizationId, userId])
-}
-
+// Core Agricultural Models
 model Trial {
-  id             String        @id @default(cuid())
-  name           String
-  description    String?
-  startDate      DateTime
-  endDate        DateTime?
-  location       String?
-  status         String        // draft, active, completed, archived
-  organizationId String
-  createdById    String
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  
-  // Geospatial data will be stored as GeoJSON
-  boundaryCoordinates Json?
-  
-  // Relationships
-  organization    Organization  @relation(fields: [organizationId], references: [id])
-  createdBy       User          @relation(fields: [createdById], references: [id])
-  plots           Plot[]
-  treatments      Treatment[]
-  observationProtocols ObservationProtocol[]
-  weatherData     WeatherData[]
+  id               String       @id @default(uuid())
+  organizationId   String
+  name             String
+  description      String?
+  location         String?
+  cropType         String?
+  metadata         Json?        @default("{}")
+  status           TrialStatus  @default(PLANNED)
+  startDate        DateTime?
+  plannedEndDate   DateTime?
+  actualEndDate    DateTime?
+  designParameters Json?        @default("{}")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  createdById      String
+
+  // Relations
+  organization        Organization          @relation(fields: [organizationId], references: [id])
+  createdBy           User                  @relation("TrialCreatedBy", fields: [createdById], references: [id])
+  plots               Plot[]                @relation("TrialPlots")
+  treatments          Treatment[]           @relation("TrialTreatments")
+  observationProtocols ObservationProtocol[] @relation("TrialProtocols")
+  routePlans          RoutePlan[]           @relation("TrialRoutePlans")
+  weatherData         WeatherData[]         @relation("TrialWeatherData")
+
+  @@map("trials")
 }
 
 model Plot {
-  id             String    @id @default(cuid())
-  plotNumber     String
-  trialId        String
-  treatmentId    String?
-  coordinates    Json      // GeoJSON for plot boundary
-  area           Float?    // area in square meters
-  notes          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  // Relationships
-  trial          Trial     @relation(fields: [trialId], references: [id], onDelete: Cascade)
-  treatment      Treatment? @relation(fields: [treatmentId], references: [id])
-  observations   Observation[]
-  routePlans     RoutePlanPlot[]
+  id            String      @id @default(uuid())
+  trialId       String
+  plotNumber    String
+  treatmentId   String?
+  replication   Int?
+  coordinates   Json?       // GeoJSON Polygon
+  centroid      Json?       // GeoJSON Point
+  sizeValue     Float?
+  sizeUnit      String?     @default("square_meters")
+  status        String?     @default("unobserved")
+  plantingDate  DateTime?
+  emergenceDate DateTime?
+  metadata      Json?       @default("{}")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  trial        Trial         @relation("TrialPlots", fields: [trialId], references: [id])
+  treatment    Treatment?    @relation("PlotTreatment", fields: [treatmentId], references: [id])
+  observations Observation[] @relation("PlotObservations")
+  images       Image[]       @relation("PlotImages")
+  notes        Note[]        @relation("PlotNotes")
+
+  @@unique([trialId, plotNumber])
+  @@map("plots")
 }
 
 model Treatment {
-  id             String    @id @default(cuid())
-  name           String
-  description    String?
-  trialId        String
-  factors        Json?     // JSON object of treatment factors and levels
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  // Relationships
-  trial          Trial     @relation(fields: [trialId], references: [id], onDelete: Cascade)
-  plots          Plot[]
+  id          String   @id @default(uuid())
+  trialId     String
+  name        String
+  description String?
+  factors     Json?    @default("{}")
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  trial Trial  @relation("TrialTreatments", fields: [trialId], references: [id])
+  plots Plot[] @relation("PlotTreatment")
+
+  @@map("treatments")
 }
 
 model ObservationProtocol {
-  id             String    @id @default(cuid())
-  name           String
-  description    String?
-  trialId        String
-  frequency      String?   // daily, weekly, monthly, etc.
-  startDate      DateTime?
-  endDate        DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  // Relationships
-  trial          Trial     @relation(fields: [trialId], references: [id], onDelete: Cascade)
-  metrics        ObservationMetric[]
-  observations   Observation[]
+  id          String    @id @default(uuid())
+  trialId     String
+  name        String
+  description String?
+  frequency   String?
+  startDate   DateTime?
+  endDate     DateTime?
+  metadata    Json?     @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String
+
+  // Relations
+  trial    Trial              @relation("TrialProtocols", fields: [trialId], references: [id])
+  createdBy User              @relation("ProtocolCreatedBy", fields: [createdById], references: [id])
+  metrics   ObservationMetric[] @relation("ProtocolMetrics")
+  observations Observation[]   @relation("ProtocolObservations")
+
+  @@map("observation_protocols")
 }
 
 model ObservationMetric {
-  id                   String    @id @default(cuid())
-  name                 String
-  description          String?
-  dataType             String    // numeric, categorical, text, image
-  unit                 String?
-  possibleValues       Json?     // For categorical data
-  required             Boolean   @default(false)
-  observationProtocolId String
-  order                Int       @default(0)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  
-  // Relationships
-  observationProtocol  ObservationProtocol @relation(fields: [observationProtocolId], references: [id], onDelete: Cascade)
-  observationValues    ObservationValue[]
+  id             String   @id @default(uuid())
+  protocolId     String
+  name           String
+  type           String   // numeric, categorical, text, image, etc.
+  unit           String?
+  validationRules Json?    @default("{}")
+  required       Boolean  @default(false)
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  protocol       ObservationProtocol @relation("ProtocolMetrics", fields: [protocolId], references: [id])
+  values         ObservationValue[]  @relation("MetricValues")
+  images         Image[]             @relation("MetricImages")
+
+  @@map("observation_metrics")
 }
 
 model Observation {
-  id                   String    @id @default(cuid())
+  id                   String    @id @default(uuid())
   plotId               String
-  observationProtocolId String
+  protocolId           String
   observerId           String
-  observationDate      DateTime
-  notes                String?
-  weatherConditions    String?
-  syncStatus           String    @default("synced") // synced, pending
+  observationTimestamp DateTime
+  location             Json?     // GeoJSON Point
+  weatherData          Json?     @default("{}")
+  blinded              Boolean   @default(false)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
-  
-  // Relationships
-  plot                 Plot      @relation(fields: [plotId], references: [id], onDelete: Cascade)
-  observationProtocol  ObservationProtocol @relation(fields: [observationProtocolId], references: [id])
-  observer             User      @relation(fields: [observerId], references: [id])
-  values               ObservationValue[]
-  images               ObservationImage[]
+  isSynced             Boolean   @default(true)
+
+  // Relations
+  plot      Plot               @relation("PlotObservations", fields: [plotId], references: [id])
+  protocol  ObservationProtocol @relation("ProtocolObservations", fields: [protocolId], references: [id])
+  observer  User               @relation("Observations", fields: [observerId], references: [id])
+  values    ObservationValue[] @relation("ObservationValues")
+  images    Image[]            @relation("ObservationImages")
+
+  @@map("observations")
 }
 
 model ObservationValue {
-  id                   String    @id @default(cuid())
-  observationId        String
-  metricId             String
-  value                String    // Store all values as strings and convert as needed
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  
-  // Relationships
-  observation          Observation @relation(fields: [observationId], references: [id], onDelete: Cascade)
-  metric               ObservationMetric @relation(fields: [metricId], references: [id])
-  
-  @@unique([observationId, metricId])
+  id            String   @id @default(uuid())
+  observationId String
+  metricId      String
+  value         Json
+  unit          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  observation Observation      @relation("ObservationValues", fields: [observationId], references: [id])
+  metric      ObservationMetric @relation("MetricValues", fields: [metricId], references: [id])
+
+  @@map("observation_values")
 }
 
-model ObservationImage {
-  id                   String    @id @default(cuid())
-  observationId        String
-  url                  String
-  caption              String?
-  localPath            String?   // For offline storage
-  syncStatus           String    @default("synced") // synced, pending
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  
-  // Relationships
-  observation          Observation @relation(fields: [observationId], references: [id], onDelete: Cascade)
+model Image {
+  id               String    @id @default(uuid())
+  plotId           String
+  observationId    String?
+  metricId         String?
+  url              String
+  thumbnailUrl     String?
+  captureTimestamp DateTime
+  geoLocation      Json?     // GeoJSON Point
+  width            Int?
+  height           Int?
+  fileType         String?
+  fileSize         Int?
+  metadata         Json?     @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  isSynced         Boolean   @default(true)
+
+  // Relations
+  plot        Plot               @relation("PlotImages", fields: [plotId], references: [id])
+  observation Observation?       @relation("ObservationImages", fields: [observationId], references: [id])
+  metric      ObservationMetric? @relation("MetricImages", fields: [metricId], references: [id])
+
+  @@map("images")
 }
 
 model RoutePlan {
-  id                   String    @id @default(cuid())
+  id                   String    @id @default(uuid())
+  trialId              String
+  userId               String
   name                 String
-  description          String?
+  plotSequence         Json      // Array of plot IDs in sequence
+  routeGeometry        Json?     // GeoJSON LineString
+  totalDistance        Float?
+  distanceUnit         String    @default("meters")
+  estimatedDuration    Int?      // In minutes
+  optimizationStrategy String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
-  scheduledDate        DateTime?
-  status               String    @default("planned") // planned, in-progress, completed
-  
-  // Relationships
-  plots                RoutePlanPlot[]
-}
 
-model RoutePlanPlot {
-  id                   String    @id @default(cuid())
-  routePlanId          String
-  plotId               String
-  order                Int
-  completed            Boolean   @default(false)
-  completedAt          DateTime?
-  
-  // Relationships
-  routePlan            RoutePlan @relation(fields: [routePlanId], references: [id], onDelete: Cascade)
-  plot                 Plot      @relation(fields: [plotId], references: [id])
-  
-  @@unique([routePlanId, plotId])
+  // Relations
+  trial Trial @relation("TrialRoutePlans", fields: [trialId], references: [id])
+  user  User  @relation("RoutePlanCreatedBy", fields: [userId], references: [id])
+
+  @@map("route_plans")
 }
 
 model WeatherData {
-  id                   String    @id @default(cuid())
-  trialId              String
-  date                 DateTime
-  temperature          Float?
-  humidity             Float?
-  precipitation        Float?
-  windSpeed            Float?
-  windDirection        String?
-  source               String?   // api, manual, etc.
-  createdAt            DateTime  @default(now())
-  
-  // Relationships
-  trial                Trial     @relation(fields: [trialId], references: [id], onDelete: Cascade)
-  
-  @@unique([trialId, date])
+  id              String   @id @default(uuid())
+  trialId         String
+  date            DateTime
+  location        Json?    // GeoJSON Point
+  dailySummary    Json?    @default("{}")
+  hourlyData      Json?    @default("[]")
+  precipitation   Float?
+  temperatureMin  Float?
+  temperatureMax  Float?
+  temperatureAvg  Float?
+  humidityAvg     Float?
+  windSpeed       Float?
+  windDirection   Float?
+  gdd             Float?   // Growing Degree Days
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  trial Trial @relation("TrialWeatherData", fields: [trialId], references: [id])
+
+  @@map("weather_data")
+}
+
+model Note {
+  id            String   @id @default(uuid())
+  plotId        String
+  userId        String
+  content       String   @db.Text
+  noteTimestamp DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isSynced      Boolean  @default(true)
+
+  // Relations
+  plot Plot @relation("PlotNotes", fields: [plotId], references: [id])
+  user User @relation("NoteCreatedBy", fields: [userId], references: [id])
+
+  @@map("notes")
 }
 
 model Equipment {
-  id                   String    @id @default(cuid())
-  name                 String
+  id                  String   @id @default(uuid())
+  organizationId      String
+  name                String
+  type                String
+  manufacturer        String?
+  model               String?
+  capabilities        Json?    @default("{}")
+  integrationSettings Json?    @default("{}")
+  lastConnected       DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("equipment")
+}
+
+model Notification {
+  id                   String   @id @default(uuid())
+  userId               String
   type                 String
-  description          String?
-  serialNumber         String?
-  lastCalibrationDate  DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  title                String
+  message              String   @db.Text
+  priority             String   @default("normal")
+  read                 Boolean  @default(false)
+  actionable           Boolean  @default(false)
+  actions              Json?    @default("[]")
+  notificationTimestamp DateTime
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  user User @relation("NotificationReceiver", fields: [userId], references: [id])
+
+  @@map("notifications")
 }
 
 model SyncLog {
-  id                   String    @id @default(cuid())
-  userId               String
-  type                 String    // upload, download
-  status               String    // success, failed
-  details              String?
-  createdAt            DateTime  @default(now())
+  id              String    @id @default(uuid())
+  userId          String
+  deviceId        String
+  status          String
+  startedAt       DateTime
+  completedAt     DateTime?
+  itemsProcessed  Int       @default(0)
+  errorDetails    Json?     @default("{}")
+
+  // Relations
+  user User @relation("SyncLogUser", fields: [userId], references: [id])
+
+  @@map("sync_logs")
 }

@@ -1,49 +1,21 @@
-import { NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-import { NextRequest } from 'next/server';
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const session = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  // Check if the path is one of the protected routes
-  const path = request.nextUrl.pathname;
-  const isProtectedRoute = 
-    path.startsWith('/dashboard') || 
-    path.startsWith('/trials') || 
-    path.startsWith('/observations') || 
-    path.startsWith('/navigation') || 
-    path.startsWith('/activity') ||
-    path.startsWith('/admin');
-  
-  // If it's a protected route and no session exists, redirect to signin
-  if (isProtectedRoute && !session) {
-    const url = new URL('/auth/signin', request.url);
-    url.searchParams.set('callbackUrl', request.url);
-    return NextResponse.redirect(url);
-  }
-
-  // Check admin routes
-  if (path.startsWith('/admin') && session) {
-    const userRole = (session as any).role || 'user';
-    
-    if (userRole !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
-
+export function middleware(request: NextRequest) {
+  // No redirects in middleware at all - just pass through everything
   return NextResponse.next();
 }
 
+// Define a matcher that excludes static files (usually not needed for authentication)
 export const config = {
   matcher: [
-    '/dashboard/:path*', 
-    '/trials/:path*', 
-    '/observations/:path*',
-    '/navigation/:path*',
-    '/activity/:path*',
-    '/admin/:path*',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

@@ -1,354 +1,216 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth-options";
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+export default function Dashboard() {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Mock data for demonstration
+  const [dashboardData, setDashboardData] = useState({
+    activeTrials: 3,
+    upcomingObservations: 12,
+    recentObservations: [
+      { id: 1, trialName: "Corn Variety Trial 2024", plotNumber: "A101", date: "2024-03-15", status: "completed" },
+      { id: 2, trialName: "Wheat Disease Resistance", plotNumber: "B205", date: "2024-03-14", status: "completed" },
+      { id: 3, trialName: "Soybean Fertilizer Trial", plotNumber: "C310", date: "2024-03-12", status: "completed" },
+    ],
+    weatherAlert: {
+      condition: "Rain expected",
+      forecast: "70% chance of precipitation in the next 24 hours",
+      alert: "Consider delaying scheduled observations"
+    }
+  });
 
-  if (!session) {
-    redirect("/auth/signin");
-  }
-
-  // Get user role - defaulting to researcher if not specified
-  const userRole = (session.user as any).role || "researcher";
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-            AG Trial Plot Planning
-          </h1>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {session.user?.name || session.user?.email}
-            </span>
-            <span className="px-2 py-1 text-xs rounded-full bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
-              {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
-            </span>
-            <Link
-              href="/api/auth/signout"
-              className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-            >
-              Sign Out
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Welcome to your Dashboard</h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            You are logged in using {session.user?.email ? 'your email account' : 'a demo account'}.
-            {session.user?.email ? ` (${session.user.email})` : ''}
-          </p>
-        </div>
-
-        {/* Trial Overview Dashboard */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Trial Overview</h2>
-            <Link
-              href="/trials"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium"
-            >
-              View All Trials →
-            </Link>
-          </div>
-          
-          {/* Quick view of trial details */}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Trial Name
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Progress
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {/* Mock trial data - first few rows */}
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Winter Wheat Variety Trial 2024</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      Active
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">North Research Farm</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div className="bg-primary-600 h-2.5 rounded-full" style={{ width: '45%' }}></div>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">45% complete</div>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Corn Fertilizer Experiment</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      Active
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">South Research Farm</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div className="bg-primary-600 h-2.5 rounded-full" style={{ width: '30%' }}></div>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">30% complete</div>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Soybean Disease Resistance Study</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                      Planned
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">East Research Farm</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div className="bg-primary-600 h-2.5 rounded-full" style={{ width: '0%' }}></div>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Not started</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Scheduled Observations */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Scheduled Observations</h2>
-            <Link
-              href="/observations"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium"
-            >
-              View All Observations →
-            </Link>
-          </div>
-          
-          {/* Quick view of scheduled observations */}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Date/Time
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Trial
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {/* Mock observation data */}
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">Today, 10:00 AM</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Winter Wheat Variety Trial</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">North Farm, Block A</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                      Pending
-                    </span>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">Today, 2:30 PM</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Corn Fertilizer Experiment</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">South Farm, Section 2</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                      Pending
-                    </span>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">Tomorrow, 9:00 AM</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">Winter Wheat Variety Trial</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">North Farm, Block B</div>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                      Scheduled
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Recent Activity</h2>
-            <Link
-              href="/activity"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium"
-            >
-              View All Activity →
-            </Link>
-          </div>
-          
-          {/* Quick view of recent activity */}
-          <div className="space-y-4">
-            <div className="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-              <div className="flex-shrink-0 p-2 rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300 mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">Observation Completed</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Winter Wheat Variety Trial, Block A</div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">Today, 8:45 AM</div>
-              </div>
-            </div>
-            
-            <div className="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-              <div className="flex-shrink-0 p-2 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">Note Added</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Corn Fertilizer Experiment - Signs of leaf discoloration in plot C-12</div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">Yesterday, 3:20 PM</div>
-              </div>
-            </div>
-            
-            <div className="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-              <div className="flex-shrink-0 p-2 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300 mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">Images Captured</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Soybean Disease Resistance Study - 8 new images added</div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">Yesterday, 11:15 AM</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">          
-          {userRole === "admin" && (
-            <DashboardCard 
-              title="User Management" 
-              count={15} 
-              href="/admin/users"
-              description="Manage users and permissions"
-            />
-          )}
-          
-          {(userRole === "admin" || userRole === "researcher") && (
-            <DashboardCard 
-              title="Create New Trial" 
-              count={null} 
-              href="/trials/new"
-              description="Set up a new agricultural trial"
-              actionLabel="Create Trial"
-            />
-          )}
-          
-          {(userRole === "field-technician" || userRole === "researcher") && (
-            <DashboardCard 
-              title="Field Navigation" 
-              count={null} 
-              href="/navigation"
-              description="Navigate to plots for data collection"
-              actionLabel="Start Navigation"
-            />
-          )}
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function DashboardCard({ 
-  title, 
-  count, 
-  href, 
-  description,
-  actionLabel
-}: { 
-  title: string; 
-  count: number | null; 
-  href: string;
-  description: string;
-  actionLabel?: string;
-}) {
-  return (
-    <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex flex-col">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-medium">{title}</h3>
-        {count !== null && (
-          <span className="px-2 py-1 text-sm rounded-full bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
-            {count}
-          </span>
-        )}
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      
+      {/* Welcome message */}
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <h2 className="text-lg font-semibold">Welcome back, {session?.user?.name || "User"}!</h2>
+        <p className="text-gray-600">Here's what's happening with your agricultural trials today.</p>
       </div>
-      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 flex-grow">
-        {description}
-      </p>
-      <Link
-        href={href}
-        className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium"
-      >
-        {actionLabel || "View Details"} →
-      </Link>
+
+      {isLoading ? (
+        // Loading skeleton
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white p-6 rounded-lg shadow animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+              <div className="h-10 bg-gray-200 rounded mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        // Dashboard cards
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Active Trials</h3>
+            <p className="text-3xl font-bold text-primary">{dashboardData.activeTrials}</p>
+            <Link href="/trials" className="text-primary-dark hover:underline text-sm inline-block mt-2">
+              View all trials →
+            </Link>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Upcoming Observations</h3>
+            <p className="text-3xl font-bold text-secondary-dark">{dashboardData.upcomingObservations}</p>
+            <Link href="/observations" className="text-secondary-dark hover:underline text-sm inline-block mt-2">
+              View observation schedule →
+            </Link>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Weather Alert</h3>
+            <p className="font-semibold text-accent">{dashboardData.weatherAlert.condition}</p>
+            <p className="text-gray-600 text-sm mt-1">{dashboardData.weatherAlert.alert}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Recent observations */}
+      <div className="bg-white rounded-lg shadow mb-6">
+        <div className="border-b border-gray-200 px-6 py-4">
+          <h2 className="text-lg font-semibold">Recent Observations</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Trial
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Plot
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {isLoading ? (
+                // Loading skeleton
+                [1, 2, 3].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="h-4 bg-gray-200 rounded w-1/2 ml-auto"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                dashboardData.recentObservations.map((observation) => (
+                  <tr key={observation.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{observation.trialName}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{observation.plotNumber}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{observation.date}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        {observation.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <a href="#" className="text-primary hover:text-primary-dark">View</a>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="border-t border-gray-200 px-6 py-4">
+          <Link href="/observations" className="text-primary hover:text-primary-dark text-sm font-medium">
+            View all observations →
+          </Link>
+        </div>
+      </div>
+      
+      {/* Quick actions */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="border-b border-gray-200 px-6 py-4">
+          <h2 className="text-lg font-semibold">Quick Actions</h2>
+        </div>
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link 
+            href="/trials"
+            className="bg-primary bg-opacity-10 hover:bg-opacity-20 p-4 rounded-lg flex flex-col items-center justify-center transition text-center"
+          >
+            <svg className="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <span className="font-medium text-gray-900">New Trial</span>
+          </Link>
+
+          <Link 
+            href="/observations"
+            className="bg-secondary bg-opacity-10 hover:bg-opacity-20 p-4 rounded-lg flex flex-col items-center justify-center transition text-center"
+          >
+            <svg className="w-8 h-8 text-secondary-dark mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span className="font-medium text-gray-900">Record Observation</span>
+          </Link>
+
+          <Link 
+            href="/navigation"
+            className="bg-accent bg-opacity-10 hover:bg-opacity-20 p-4 rounded-lg flex flex-col items-center justify-center transition text-center"
+          >
+            <svg className="w-8 h-8 text-accent mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            <span className="font-medium text-gray-900">Plot Navigation</span>
+          </Link>
+
+          <Link 
+            href="/settings"
+            className="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg flex flex-col items-center justify-center transition text-center"
+          >
+            <svg className="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="font-medium text-gray-900">Settings</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

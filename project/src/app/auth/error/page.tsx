@@ -1,63 +1,50 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { Suspense } from 'react';
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
-// Component to handle the search params and error display
-function AuthErrorContent() {
+export default function ErrorPage() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const error = searchParams.get("error");
 
-  // Map error codes to user-friendly messages
   const errorMessages: Record<string, string> = {
-    default: 'An error occurred during authentication. Please try again.',
-    configuration: 'There is a problem with the server configuration. Please contact support.',
-    accessdenied: 'You do not have permission to sign in.',
-    verification: 'The verification link is invalid or has expired.',
-    'oauth-callback-error': 'There was a problem with the OAuth provider. Please try again later.',
+    Configuration: "There is a problem with the server configuration.",
+    AccessDenied: "You do not have permission to sign in.",
+    Verification: "The sign in link has expired or has already been used.",
+    Default: "An unexpected error occurred during authentication.",
   };
 
-  const errorMessage = error && errorMessages[error] ? errorMessages[error] : errorMessages.default;
+  const errorMessage = error && errorMessages[error] ? errorMessages[error] : errorMessages.Default;
 
   return (
-    <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
-      <h1 className="text-2xl font-bold text-red-600 mb-4">Authentication Error</h1>
-      <p className="mb-6 text-gray-700 dark:text-gray-300">{errorMessage}</p>
-      <div className="flex flex-col space-y-4">
-        <Link
-          href="/auth/signin"
-          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition"
-        >
-          Try Again
-        </Link>
-        <Link
-          href="/"
-          className="px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded-md transition"
-        >
-          Return to Home
-        </Link>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Authentication Error
+        </h2>
       </div>
-    </div>
-  );
-}
 
-// Fallback for the Suspense boundary
-function AuthErrorFallback() {
-  return (
-    <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
-      <h1 className="text-2xl font-bold text-primary-600 mb-4">Loading...</h1>
-      <p className="mb-6 text-gray-700 dark:text-gray-300">Please wait while we process your request.</p>
-    </div>
-  );
-}
-
-export default function AuthErrorPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white dark:from-primary-950 dark:to-primary-900">
-      <Suspense fallback={<AuthErrorFallback />}>
-        <AuthErrorContent />
-      </Suspense>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Authentication failed</h3>
+                <p className="mt-2 text-sm text-red-700">{errorMessage}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-center">
+            <Link 
+              href="/auth/signin" 
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              Return to Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

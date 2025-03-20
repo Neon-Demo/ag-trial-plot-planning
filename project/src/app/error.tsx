@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import Link from "next/link";
 
-export default function ErrorPage({
+export default function Error({
   error,
   reset,
 }: {
@@ -11,39 +12,52 @@ export default function ErrorPage({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Application error:', error);
+    console.error(error);
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-2">Something went wrong!</h1>
-          <p className="text-gray-600 mb-4">
-            The application encountered an unexpected error.
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Something went wrong!</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            We're sorry, but an error occurred while processing your request.
           </p>
-          
-          <div className="mb-6 p-3 bg-gray-100 rounded text-left text-xs">
-            <p>Error: {error.message || 'Unknown error'}</p>
-            {error.digest && <p className="mt-1">Digest: {error.digest}</p>}
+        </div>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error Details</h3>
+                <p className="mt-2 text-sm text-red-700">
+                  {error.message || "An unexpected error occurred"}
+                </p>
+                {error.digest && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Error ID: {error.digest}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
           
-          <div className="space-y-2 text-left text-sm mt-4">
-            <p className="font-medium">Possible solutions:</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Check that <code>NEXTAUTH_SECRET</code> is set</li>
-              <li>Make sure <code>NEXTAUTH_URL</code> matches your deployed URL exactly</li>
-              <li>Verify <code>ALLOW_DEMO_LOGIN</code> is set to "true"</li>
-              <li>Clear your browser cookies and try again</li>
-            </ul>
+          <div className="flex items-center justify-center space-x-4">
+            <button
+              onClick={() => reset()}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              Try again
+            </button>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              Go to Dashboard
+            </Link>
           </div>
-          
-          <button
-            onClick={reset}
-            className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-          >
-            Try again
-          </button>
         </div>
       </div>
     </div>
