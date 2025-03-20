@@ -17,9 +17,11 @@ export default function LoginButtons() {
       console.log(`Signing in as ${demoUser} demo user...`);
       
       // Use NextAuth's signIn with direct dashboard redirect
+      // Use the window location to construct a base-relative URL
+      const basePath = window.location.origin;
       signIn("credentials", { 
         username: demoUser,
-        callbackUrl: "/dashboard",
+        callbackUrl: `${basePath}/dashboard`,
         redirect: true
       });
       

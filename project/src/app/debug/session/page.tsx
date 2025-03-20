@@ -17,7 +17,7 @@ export default function DebugSession() {
   }, [status]);
 
   const handleGoToDashboard = () => {
-    window.location.href = "/dashboard";
+    window.location.href = `${window.location.origin}/dashboard`;
   };
 
   return (

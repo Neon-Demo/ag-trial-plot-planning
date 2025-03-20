@@ -52,7 +52,7 @@ export default function Error({
               Try again
             </button>
             <Link
-              href="/dashboard"
+              href={typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard'}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Go to Dashboard

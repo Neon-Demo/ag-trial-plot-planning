@@ -37,7 +37,8 @@ export default function AuthenticatedLayout({
     
     // Using window.location.href which is more reliable than router
     if (typeof window !== 'undefined') {
-      window.location.href = "/auth/signin";
+      const basePath = window.location.origin;
+      window.location.href = `${basePath}/auth/signin`;
       // Return null or loading indicator while redirecting
       return (
         <div className="flex items-center justify-center h-screen">
@@ -226,7 +227,7 @@ export default function AuthenticatedLayout({
                     {session?.user?.name || "User"}
                   </p>
                   <button
-                    onClick={() => signOut({ callbackUrl: "/" })}
+                    onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}
                     className="text-sm font-medium text-primary-light hover:text-white"
                   >
                     Sign out
@@ -298,7 +299,7 @@ export default function AuthenticatedLayout({
                       {session?.user?.name || "User"}
                     </p>
                     <button
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}
                       className="text-xs font-medium text-primary-light hover:text-white"
                     >
                       Sign out

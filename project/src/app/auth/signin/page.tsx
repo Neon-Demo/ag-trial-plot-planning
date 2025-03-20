@@ -21,7 +21,9 @@ function SignInContent() {
       
       // Use a timeout to avoid immediate redirects that might cause loops
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        // Use window.location.origin to get the base URL
+        const basePath = window.location.origin;
+        window.location.href = `${basePath}/dashboard`;
       }, 100);
     }
   }, [status, redirecting]);
