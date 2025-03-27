@@ -9,9 +9,9 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#2a9d8f',
-          light: '#8ed3cd',
-          dark: '#1e776c',
+          DEFAULT: '#4299e1', // Changed to light blue
+          light: '#a3cbf6', // Lighter blue
+          dark: '#2c5282', // Darker blue
         },
         secondary: {
           DEFAULT: '#e9c46a',
@@ -22,6 +22,11 @@ module.exports = {
           DEFAULT: '#e76f51',
           light: '#f2b5a7',
           dark: '#be532a',
+        },
+        // Background colors
+        background: {
+          DEFAULT: '#ebf8ff', // Very light blue
+          secondary: '#e6f1fc', // Another light blue shade
         },
       },
     },

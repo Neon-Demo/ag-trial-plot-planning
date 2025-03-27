@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-primary shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -29,7 +29,7 @@ export default function Home() {
       </header>
 
       {/* Hero section */}
-      <div className="bg-gradient-to-b from-primary-light to-white py-16 md:py-24">
+      <div className="bg-gradient-to-b from-primary-light to-background py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:space-x-8">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -58,9 +58,9 @@ export default function Home() {
             <div className="md:w-1/2 relative h-64 md:h-96 bg-primary-light rounded-lg shadow-lg flex items-center justify-center">
               <div className="text-center p-8">
                 <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-4">
-                  <path d="M20 50 L40 70 L80 30" stroke="#2a9d8f" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="20" cy="30" r="8" fill="#2a9d8f" />
-                  <circle cx="80" cy="70" r="8" fill="#2a9d8f" />
+                  <path d="M20 50 L40 70 L80 30" stroke="#4299e1" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="20" cy="30" r="8" fill="#4299e1" />
+                  <circle cx="80" cy="70" r="8" fill="#4299e1" />
                 </svg>
                 <h3 className="text-xl font-bold text-primary">Optimize Your Field Trials</h3>
                 <p className="text-gray-700 mt-2">Plan, navigate, and collect data efficiently</p>
@@ -71,14 +71,14 @@ export default function Home() {
       </div>
 
       {/* Features section */}
-      <section id="features" className="py-16 md:py-24 bg-gray-50">
+      <section id="features" className="py-16 md:py-24 bg-background-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Key Features
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-background rounded-lg shadow-md p-6">
               <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -90,7 +90,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-background rounded-lg shadow-md p-6">
               <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -102,7 +102,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-background rounded-lg shadow-md p-6">
               <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -115,9 +115,9 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="h-12 w-12 bg-secondary-light rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-secondary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="bg-background rounded-lg shadow-md p-6">
+              <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -127,9 +127,9 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="h-12 w-12 bg-secondary-light rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-secondary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="bg-background rounded-lg shadow-md p-6">
+              <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </div>
@@ -139,9 +139,9 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="h-12 w-12 bg-secondary-light rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-secondary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="bg-background rounded-lg shadow-md p-6">
+              <div className="h-12 w-12 bg-primary-light rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
