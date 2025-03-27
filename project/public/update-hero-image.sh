@@ -1,16 +1,22 @@
 #!/bin/bash
-# This script will download the hero image from the GitHub issue attachment
+# This script provides instructions for manually updating the hero image
 
-# Create a directory for the download if it doesn't exist
-mkdir -p downloads
-
-# Download the image from the GitHub attachment URL
-curl -s https://github.com/user-attachments/assets/af22f420-2040-4bd1-bcf9-660de8f28e90 -o downloads/temp-hero-image.jpg
-
-# Copy the downloaded image to the public directory
-cp downloads/temp-hero-image.jpg public/hero-image.jpg
-
-# Clean up
-rm -rf downloads
-
-echo "Hero image has been updated successfully!"
+echo "=== Hero Image Update Instructions ==="
+echo ""
+echo "The download of the hero image requires manual steps:"
+echo ""
+echo "1. Please download the image from this URL:"
+echo "   https://github.com/user-attachments/assets/af22f420-2040-4bd1-bcf9-660de8f28e90"
+echo ""
+echo "2. Save it as 'hero-image.jpg' in this directory:"
+echo "   $(pwd)"
+echo ""
+echo "3. The full path should be:"
+echo "   $(pwd)/hero-image.jpg"
+echo ""
+echo "4. After saving the file, verify that it appears on the homepage"
+echo ""
+echo "Note: The automated curl method was attempted but doesn't work correctly"
+echo "      with GitHub user-attachments. Manual download is required."
+echo ""
+echo "For detailed instructions, see hero-image-instructions.md in this directory."
