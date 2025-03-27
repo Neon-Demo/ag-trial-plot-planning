@@ -50,7 +50,7 @@ export default function LoginButtons() {
         <button
           onClick={() => handleDemoLogin("researcher")}
           disabled={isLoading}
-          className={`px-4 py-2 text-sm font-medium text-white bg-secondary rounded-md hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary ${
+          className={`px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
             isLoading && selectedDemo === "researcher" ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >
