@@ -1,16 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from 'next/dynamic';
-
-// Import the PlaceholderImage component
-const PlaceholderImage = dynamic(() => import('./placeholder').then(mod => mod.PlaceholderImage), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center w-full h-full bg-primary-light">
-      <div className="text-primary font-bold">Loading agricultural trial image...</div>
-    </div>
-  ),
-});
+import HeroImage from "./hero-image.client";
 
 export default function Home() {
   return (
@@ -67,41 +57,11 @@ export default function Home() {
               </div>
             </div>
             <div className="md:w-1/2 relative h-64 md:h-96 rounded-lg shadow-lg overflow-hidden">
+              {/* Using client component for image with error handling */}
               <div className="relative w-full h-full">
-                {/* Primary image attempt */}
-                <Image
-                  src="/hero-image.jpg"
-                  alt="Agricultural field trials with researchers collecting data"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  priority
-                  onError={(e) => {
-                    // When the image fails to load, update the DOM to show the placeholder
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none'; // Hide the broken image
-                    
-                    // Show the backup placeholder
-                    const placeholderEl = document.getElementById('hero-placeholder');
-                    if (placeholderEl) {
-                      placeholderEl.style.display = 'flex';
-                    }
-                  }}
-                />
-                
-                {/* Backup placeholder - hidden by default */}
-                <div 
-                  id="hero-placeholder"
-                  className="absolute inset-0 bg-primary-light hidden"
-                  style={{ display: 'none' }}
-                >
-                  <PlaceholderImage 
-                    text="Agricultural Field Trials" 
-                    width="100%" 
-                    height="100%"
-                    bgColor="#e8f4ea"
-                    textColor="#2a9d8f"
-                  />
-                </div>
+                {/* Import the client component dynamically */}
+                {/* @ts-expect-error Async Server Component */}
+                <HeroImage />
               </div>
             </div>
           </div>
