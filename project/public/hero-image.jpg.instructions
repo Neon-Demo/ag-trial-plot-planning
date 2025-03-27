@@ -1,0 +1,16 @@
+To update the hero image, please download a new image showing agricultural field trials with researchers collecting data from experimental plots. The image should:
+
+1. Show researchers or agricultural scientists in a field trial setting
+2. Depict people actively collecting data or examining crops in trial plots
+3. Be high resolution (at least 1200px wide)
+4. Have good lighting and clear visibility of the agricultural trial setting
+5. Replace the current hero-image.jpg file in the /project/public directory
+
+I've already updated the code in page.tsx to properly display the new hero image using the Next.js Image component with appropriate dimensions and alt text.
+
+Recommended image sources:
+- Stock photo sites like Pexels, Unsplash, or Shutterstock
+- Agricultural research databases with proper licensing
+- Your own organization's field trial photographs
+
+After downloading the new image, rename it to hero-image.jpg and place it in the /project/public directory.

@@ -55,16 +55,14 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="md:w-1/2 relative h-64 md:h-96 bg-primary-light rounded-lg shadow-lg flex items-center justify-center">
-              <div className="text-center p-8">
-                <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-4">
-                  <path d="M20 50 L40 70 L80 30" stroke="#2a9d8f" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="20" cy="30" r="8" fill="#2a9d8f" />
-                  <circle cx="80" cy="70" r="8" fill="#2a9d8f" />
-                </svg>
-                <h3 className="text-xl font-bold text-primary">Optimize Your Field Trials</h3>
-                <p className="text-gray-700 mt-2">Plan, navigate, and collect data efficiently</p>
-              </div>
+            <div className="md:w-1/2 relative h-64 md:h-96 rounded-lg shadow-lg overflow-hidden">
+              <Image
+                src="/hero-image.jpg"
+                alt="Agricultural field trials with researchers collecting data"
+                fill
+                style={{ objectFit: 'cover' }}
+                priority
+              />
             </div>
           </div>
         </div>
