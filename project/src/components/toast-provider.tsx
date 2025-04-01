@@ -48,7 +48,7 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
   const getBgColor = (type: "success" | "error" | "info" | "warning") => {
     switch (type) {
       case "success":
-        return "bg-green-500";
+        return "bg-blue-500";
       case "error":
         return "bg-red-500";
       case "info":

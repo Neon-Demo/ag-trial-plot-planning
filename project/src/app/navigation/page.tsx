@@ -85,9 +85,9 @@ export default function Navigation() {
                         : "Trial selected. Select a route plan to view the navigation path."}
                     </p>
                     {selectedRoute && (
-                      <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-green-800 font-medium">Route Loaded</p>
-                        <p className="text-green-700 text-sm mt-1">
+                      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-blue-800 font-medium">Route Loaded</p>
+                        <p className="text-blue-700 text-sm mt-1">
                           Next Plot: Plot A103 - 45m ahead
                         </p>
                       </div>
