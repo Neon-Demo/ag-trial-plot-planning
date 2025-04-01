@@ -3,7 +3,22 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { DEMO_USERS } from "./demo-data";
 import { UserRole } from "@prisma/client";
 
+// Force NextAuth to use the correct URL whether running locally or in production
+const getBaseUrl = () => {
+  // If NEXTAUTH_URL is set in environment, use it
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+  
+  // In production, NextAuth will automatically detect the URL from the request
+  // No need to set it explicitly
+  return undefined;
+};
+
 export const authOptions: NextAuthOptions = {
+  // Use the dynamically determined URL
+  baseUrl: getBaseUrl(),
+  
   providers: [
     // Demo credentials provider
     CredentialsProvider({
