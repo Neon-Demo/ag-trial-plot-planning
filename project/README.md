@@ -67,6 +67,15 @@ This application includes a demo mode that allows you to explore the features wi
 - Configure a PostgreSQL database
 - Set the appropriate environment variables
 
+#### Environment Variables for Production
+
+When deploying to production environments (like AWS):
+
+- `NEXTAUTH_URL`: For production deployments, this should be removed or set to match the actual deployment URL. NextAuth will automatically determine the correct URL from the incoming request if this variable is not set.
+- `NEXTAUTH_SECRET`: Should be set to a secure random string in production.
+
+This ensures the application works correctly regardless of the host it's deployed to.
+
 ## Technology Stack
 
 - **Frontend:** React, Next.js, TypeScript, TailwindCSS
