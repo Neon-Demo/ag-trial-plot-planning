@@ -18,7 +18,7 @@ const MainNavigator = () => {
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#4CAF50',
+        tabBarActiveTintColor: '#4299e1',
         tabBarInactiveTintColor: '#757575',
         tabBarStyle: {
           height: Platform.OS === 'ios' ? 90 : 70,

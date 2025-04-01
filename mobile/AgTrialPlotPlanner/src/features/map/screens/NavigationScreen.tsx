@@ -410,7 +410,7 @@ const NavigationScreen = () => {
   const getStatusColor = (status: Plot['status']) => {
     switch (status) {
       case 'unobserved': return '#9E9E9E'; // Grey
-      case 'observed': return '#4CAF50'; // Green
+      case 'observed': return '#4299e1'; // Blue
       case 'flagged': return '#F44336'; // Red
       default: return '#9E9E9E';
     }
@@ -419,7 +419,7 @@ const NavigationScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+        <ActivityIndicator size="large" color="#4299e1" />
         <Text style={styles.loadingText}>Loading navigation...</Text>
       </View>
     );
@@ -474,7 +474,7 @@ const NavigationScreen = () => {
           <Ionicons 
             name={navigationActive ? "navigate" : "navigate-outline"} 
             size={20} 
-            color={navigationActive ? "white" : "#4CAF50"} 
+            color={navigationActive ? "white" : "#4299e1"} 
           />
         </TouchableOpacity>
       </View>
@@ -537,7 +537,7 @@ const NavigationScreen = () => {
               <Ionicons 
                 name="arrow-up" 
                 size={48} 
-                color={destinationReached ? "#4CAF50" : "#007AFF"} 
+                color={destinationReached ? "#4299e1" : "#007AFF"} 
               />
             </Animated.View>
             <Text style={styles.etaText}>
@@ -559,7 +559,7 @@ const NavigationScreen = () => {
             <Ionicons 
               name="chevron-back" 
               size={24} 
-              color={currentPlotIndex <= 0 ? "#999" : "#4CAF50"} 
+              color={currentPlotIndex <= 0 ? "#999" : "#4299e1"} 
             />
             <Text style={[
               styles.controlText,
@@ -588,7 +588,7 @@ const NavigationScreen = () => {
             <Ionicons 
               name="chevron-forward" 
               size={24} 
-              color={currentPlotIndex >= (routePlan.plotSequence.length - 1) ? "#999" : "#4CAF50"} 
+              color={currentPlotIndex >= (routePlan.plotSequence.length - 1) ? "#999" : "#4299e1"} 
             />
             <Text style={[
               styles.controlText,
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
     paddingVertical: 16,
     paddingHorizontal: 16,
   },
@@ -644,12 +644,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navActive: {
-    backgroundColor: '#388E3C',
+    backgroundColor: '#2b6cb0',
   },
   navInactive: {
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#4CAF50',
+    borderColor: '#4299e1',
   },
   mapContainer: {
     flex: 1,
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   },
   controlText: {
     fontSize: 12,
-    color: '#4CAF50',
+    color: '#4299e1',
     marginTop: 4,
   },
   controlTextDisabled: {
@@ -777,7 +777,7 @@ const styles = StyleSheet.create({
   observeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 24,
@@ -812,7 +812,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   backButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,

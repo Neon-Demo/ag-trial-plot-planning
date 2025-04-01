@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     borderRadius: 20,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -56,16 +56,16 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   gridCell1: {
-    backgroundColor: '#8BC34A',
+    backgroundColor: '#90cdf4',
   },
   gridCell2: {
-    backgroundColor: '#689F38',
+    backgroundColor: '#63b3ed',
   },
   gridCell3: {
-    backgroundColor: '#558B2F',
+    backgroundColor: '#4299e1',
   },
   gridCell4: {
-    backgroundColor: '#33691E',
+    backgroundColor: '#2b6cb0',
   },
 });
 
