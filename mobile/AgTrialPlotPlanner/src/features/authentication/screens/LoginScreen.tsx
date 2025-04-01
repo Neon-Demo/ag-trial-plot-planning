@@ -122,14 +122,14 @@ const LoginScreen = () => {
               
               <TouchableOpacity style={styles.offlineLoginContainer}>
                 <Text style={styles.offlineLoginText}>Offline login</Text>
-                <Ionicons name="chevron-forward" size={18} color="#4CAF50" />
+                <Ionicons name="chevron-forward" size={18} color="#4299e1" />
               </TouchableOpacity>
             </View>
           </View>
           
           {isLoading && (
             <View style={styles.loadingOverlay}>
-              <ActivityIndicator size="large" color="#4CAF50" />
+              <ActivityIndicator size="large" color="#4299e1" />
               <Text style={styles.loadingText}>Signing in...</Text>
             </View>
           )}
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#4299e1',
     marginBottom: 10,
   },
   appSubtitle: {
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0078D4',
   },
   demoButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
   },
   socialButtonText: {
     color: '#FFFFFF',
@@ -234,13 +234,13 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#4CAF50',
+    borderColor: '#4299e1',
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4299e1',
   },
   rememberMeText: {
     color: '#616161',
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   offlineLoginText: {
-    color: '#4CAF50',
+    color: '#4299e1',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#4CAF50',
+    color: '#4299e1',
   },
   footer: {
     padding: 20,
