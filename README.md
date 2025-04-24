@@ -62,4 +62,5 @@ This project is developed and maintained by a team dedicated to improving agricu
 
 This project is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
 
-This was added by the app using claude cli
+## Claude CLI Integration
+This project includes Claude CLI integration for enhanced developer productivity and documentation management.
