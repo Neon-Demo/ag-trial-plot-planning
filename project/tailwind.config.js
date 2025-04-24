@@ -25,6 +25,7 @@ module.exports = {
         },
         greenyellow: '#ADFF2F',
         orange: '#FF7F00',
+        cyan: '#00FFFF',
       },
     },
   },
