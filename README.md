@@ -61,3 +61,5 @@ This project is developed and maintained by a team dedicated to improving agricu
 ## License
 
 This project is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
+
+This was added by the app using claude cli
