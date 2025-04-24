@@ -24,6 +24,7 @@ module.exports = {
           dark: '#be532a',
         },
         greenyellow: '#ADFF2F',
+        orange: '#FF7F00',
       },
     },
   },

@@ -130,7 +130,7 @@ export default function AuthenticatedLayout({
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-greenyellow">
+    <div className="h-screen flex overflow-hidden bg-orange">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
