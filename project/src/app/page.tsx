@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-magenta-500">
       {/* Header */}
-      <header className="bg-primary shadow-md">
+      <header className="bg-magenta-600 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <div className="h-8 w-8 flex items-center justify-center">
@@ -29,7 +29,7 @@ export default function Home() {
       </header>
 
       {/* Hero section */}
-      <div className="bg-gradient-to-b from-magenta-400 to-white py-16 md:py-24">
+      <div className="bg-gradient-to-b from-magenta-500 to-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:space-x-8">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -71,7 +71,7 @@ export default function Home() {
       </div>
 
       {/* Features section */}
-      <section id="features" className="py-16 md:py-24 bg-magenta-50">
+      <section id="features" className="py-16 md:py-24 bg-magenta-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Key Features
@@ -155,7 +155,7 @@ export default function Home() {
       </section>
 
       {/* CTA section */}
-      <section className="bg-primary py-16">
+      <section className="bg-magenta-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to streamline your agricultural research?
@@ -174,7 +174,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-magenta-800 text-white py-12">
+      <footer className="bg-magenta-700 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
