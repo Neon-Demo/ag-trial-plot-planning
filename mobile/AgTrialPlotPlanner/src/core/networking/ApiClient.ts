@@ -5,6 +5,8 @@ import NetInfo from '@react-native-community/netinfo';
 // Constants
 const API_URL = 'https://api.agroplot.com/v1'; // Will need to be updated for actual API
 const AUTH_TOKEN_KEY = 'auth_token';
+const WEATHER_API_KEY = 'YOUR_API_KEY'; // Replace with actual OpenWeatherMap API key
+const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
 
 // Create axios instance
 export const apiClient = axios.create({

@@ -8,6 +8,7 @@ import {
   RefreshControl,
   SafeAreaView,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +16,7 @@ import { AppDispatch, RootState } from '../../core/store';
 import { logout } from '../../core/store/authSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { Trial } from '../../core/models/Types';
+import { WeatherService, WeatherData } from '../../core/networking/WeatherService';
 
 // Mock data
 const mockTrials: Trial[] = [
@@ -154,16 +156,38 @@ const HomeScreen = () => {
   const [activeTrials, setActiveTrials] = useState(mockTrials.filter(trial => trial.status === 'active'));
   const [recentPlots, setRecentPlots] = useState(mockRecentPlots);
   const [todayObservations, setTodayObservations] = useState(mockTodayObservations);
-  const [weather, setWeather] = useState(mockWeather);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
 
-  // Simulated data fetch
+  // Fetch real weather data and other data
   useEffect(() => {
-    // This would be replaced with actual API calls in the real app
-    const simulateInitialDataFetch = async () => {
-      // In a real app, we would call API endpoints here
+    const fetchData = async () => {
+      try {
+        // Fetch weather data for user's current location
+        setWeatherLoading(true);
+        const weatherData = await WeatherService.getCurrentWeather();
+        
+        if (weatherData) {
+          setWeather(weatherData);
+          setWeatherError(null);
+        } else {
+          // Fallback to mock data if we couldn't get real data
+          setWeather(mockWeather);
+          setWeatherError('Could not retrieve weather data. Using default values.');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setWeather(mockWeather);
+        setWeatherError('Error retrieving weather. Using default values.');
+      } finally {
+        setWeatherLoading(false);
+      }
+      
+      // In a real app, we would also call other API endpoints here
     };
     
-    simulateInitialDataFetch();
+    fetchData();
   }, []);
 
   const handleLogout = () => {
@@ -173,18 +197,34 @@ const HomeScreen = () => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     
-    // Simulate data refresh
-    setTimeout(() => {
-      // This would be real data fetching in the actual app
+    // Actually refresh weather data
+    const refreshData = async () => {
+      try {
+        // Fetch fresh weather data
+        setWeatherLoading(true);
+        const weatherData = await WeatherService.getCurrentWeather();
+        
+        if (weatherData) {
+          setWeather(weatherData);
+          setWeatherError(null);
+        }
+      } catch (error) {
+        console.error('Error refreshing weather data:', error);
+        setWeatherError('Could not refresh weather data.');
+      } finally {
+        setWeatherLoading(false);
+      }
       
-      // Simulate sync status changes
+      // Simulate sync status changes (would be real in production)
       const syncStates = ['synced', 'pending', 'syncing', 'offline'] as const;
       const randomState = syncStates[Math.floor(Math.random() * syncStates.length)];
       setSyncStatus(randomState);
       setPendingSyncs(randomState === 'pending' ? Math.floor(Math.random() * 10) + 1 : 0);
       
       setRefreshing(false);
-    }, 1500);
+    };
+    
+    refreshData();
   }, []);
 
   const navigateToTrial = (trialId: string) => {
@@ -266,30 +306,54 @@ const HomeScreen = () => {
             imageStyle={{ borderRadius: 8 }}
           >
             <View style={styles.weatherOverlay}>
-              <View style={styles.weatherHeader}>
-                <View>
-                  <Text style={styles.weatherLocation}>{weather.location}</Text>
-                  <Text style={styles.weatherDate}>{weather.date}</Text>
+              {weatherLoading ? (
+                <View style={styles.weatherLoading}>
+                  <ActivityIndicator size="large" color="#FFFFFF" />
+                  <Text style={styles.weatherLoadingText}>Fetching weather data...</Text>
                 </View>
-                <View style={styles.weatherTempContainer}>
-                  <Ionicons name={weather.icon as any} size={28} color="#FFFFFF" />
-                  <Text style={styles.weatherTemp}>{weather.temperature}°C</Text>
+              ) : !weather ? (
+                <View style={styles.weatherError}>
+                  <Ionicons name="cloud-offline" size={32} color="#FFFFFF" />
+                  <Text style={styles.weatherErrorText}>Could not load weather data</Text>
+                  <TouchableOpacity style={styles.weatherRetryButton} onPress={onRefresh}>
+                    <Text style={styles.weatherRetryText}>Retry</Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
-              <View style={styles.weatherDetails}>
-                <View style={styles.weatherItem}>
-                  <Ionicons name="water-outline" size={16} color="#FFFFFF" />
-                  <Text style={styles.weatherItemText}>Humidity: {weather.humidity}%</Text>
-                </View>
-                <View style={styles.weatherItem}>
-                  <Ionicons name="umbrella-outline" size={16} color="#FFFFFF" />
-                  <Text style={styles.weatherItemText}>Precipitation: {weather.precipitation}%</Text>
-                </View>
-                <View style={styles.weatherItem}>
-                  <Ionicons name="leaf-outline" size={16} color="#FFFFFF" />
-                  <Text style={styles.weatherItemText}>Wind: {weather.windSpeed} km/h</Text>
-                </View>
-              </View>
+              ) : (
+                <>
+                  <View style={styles.weatherHeader}>
+                    <View>
+                      <Text style={styles.weatherLocation}>{weather.location}</Text>
+                      <Text style={styles.weatherDate}>{weather.date}</Text>
+                      <Text style={styles.weatherCondition}>{weather.condition}</Text>
+                    </View>
+                    <View style={styles.weatherTempContainer}>
+                      <Ionicons name={weather.icon as any} size={28} color="#FFFFFF" />
+                      <Text style={styles.weatherTemp}>{weather.temperature}°C</Text>
+                    </View>
+                  </View>
+                  <View style={styles.weatherDetails}>
+                    <View style={styles.weatherItem}>
+                      <Ionicons name="water-outline" size={16} color="#FFFFFF" />
+                      <Text style={styles.weatherItemText}>Humidity: {weather.humidity}%</Text>
+                    </View>
+                    <View style={styles.weatherItem}>
+                      <Ionicons name="umbrella-outline" size={16} color="#FFFFFF" />
+                      <Text style={styles.weatherItemText}>Precip: {weather.precipitation}%</Text>
+                    </View>
+                    <View style={styles.weatherItem}>
+                      <Ionicons name="leaf-outline" size={16} color="#FFFFFF" />
+                      <Text style={styles.weatherItemText}>Wind: {weather.windSpeed} km/h</Text>
+                    </View>
+                  </View>
+                  {weatherError && (
+                    <View style={styles.weatherWarning}>
+                      <Ionicons name="alert-circle-outline" size={14} color="#FFFFFF" />
+                      <Text style={styles.weatherWarningText}>{weatherError}</Text>
+                    </View>
+                  )}
+                </>
+              )}
             </View>
           </ImageBackground>
         </View>
@@ -497,24 +561,39 @@ const HomeScreen = () => {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Weather Forecast</Text>
-            <TouchableOpacity style={styles.seeAllButton}>
-              <Text style={styles.seeAllButtonText}>7-Day</Text>
-              <Ionicons name="chevron-forward" size={16} color="#4CAF50" />
+            <TouchableOpacity 
+              style={styles.seeAllButton}
+              onPress={onRefresh}
+            >
+              <Text style={styles.seeAllButtonText}>Refresh</Text>
+              <Ionicons name="refresh" size={16} color="#4CAF50" />
             </TouchableOpacity>
           </View>
           
-          <View style={styles.forecastContainer}>
-            {weather.forecast.map((day, index) => (
-              <View key={index} style={styles.forecastDay}>
-                <Text style={styles.forecastDayText}>{day.day}</Text>
-                <Ionicons name={day.icon as any} size={24} color="#757575" />
-                <View style={styles.forecastTemp}>
-                  <Text style={styles.forecastHighTemp}>{day.high}°</Text>
-                  <Text style={styles.forecastLowTemp}>{day.low}°</Text>
+          {weatherLoading ? (
+            <View style={styles.forecastLoading}>
+              <ActivityIndicator size="small" color="#4CAF50" />
+              <Text style={styles.forecastLoadingText}>Loading forecast...</Text>
+            </View>
+          ) : !weather ? (
+            <View style={styles.forecastError}>
+              <Ionicons name="cloud-offline" size={24} color="#757575" />
+              <Text style={styles.forecastErrorText}>Forecast unavailable</Text>
+            </View>
+          ) : (
+            <View style={styles.forecastContainer}>
+              {weather.forecast.map((day, index) => (
+                <View key={index} style={styles.forecastDay}>
+                  <Text style={styles.forecastDayText}>{day.day}</Text>
+                  <Ionicons name={day.icon as any} size={24} color="#757575" />
+                  <View style={styles.forecastTemp}>
+                    <Text style={styles.forecastHighTemp}>{day.high}°</Text>
+                    <Text style={styles.forecastLowTemp}>{day.low}°</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -597,6 +676,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     opacity: 0.8,
   },
+  weatherCondition: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginTop: 2,
+  },
   weatherTempContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -619,6 +704,88 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#FFFFFF',
     marginLeft: 4,
+  },
+  weatherLoading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  weatherLoadingText: {
+    color: '#FFFFFF',
+    marginTop: 8,
+    fontSize: 14,
+  },
+  weatherError: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  weatherErrorText: {
+    color: '#FFFFFF',
+    marginTop: 8,
+    fontSize: 14,
+  },
+  weatherRetryButton: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 16,
+  },
+  weatherRetryText: {
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
+  weatherWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    marginTop: 8,
+  },
+  weatherWarningText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    marginLeft: 4,
+  },
+  forecastLoading: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    height: 80,
+  },
+  forecastLoadingText: {
+    marginLeft: 8,
+    color: '#757575',
+  },
+  forecastError: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    height: 80,
+  },
+  forecastErrorText: {
+    marginLeft: 8,
+    color: '#757575',
   },
   quickActionsContainer: {
     flexDirection: 'row',
