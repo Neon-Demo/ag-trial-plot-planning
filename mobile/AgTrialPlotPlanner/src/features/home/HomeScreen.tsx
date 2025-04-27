@@ -358,6 +358,54 @@ const HomeScreen = () => {
           </ImageBackground>
         </View>
 
+        {/* Current Weather Widget */}
+        <View style={styles.weatherWidgetContainer}>
+          {weatherLoading ? (
+            <View style={styles.weatherWidgetLoading}>
+              <ActivityIndicator size="small" color="#4CAF50" />
+              <Text style={styles.weatherWidgetLoadingText}>Loading weather...</Text>
+            </View>
+          ) : !weather ? (
+            <View style={styles.weatherWidgetError}>
+              <Ionicons name="cloud-offline" size={24} color="#757575" />
+              <Text style={styles.weatherWidgetErrorText}>Weather unavailable</Text>
+            </View>
+          ) : (
+            <View style={styles.weatherWidget}>
+              <View style={styles.weatherWidgetHeader}>
+                <Text style={styles.weatherWidgetTitle}>Current Weather</Text>
+                <TouchableOpacity onPress={onRefresh}>
+                  <Ionicons name="refresh-outline" size={18} color="#4CAF50" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.weatherWidgetContent}>
+                <View style={styles.weatherWidgetMain}>
+                  <Ionicons name={weather.icon as any} size={48} color="#4CAF50" />
+                  <View style={styles.weatherWidgetInfo}>
+                    <Text style={styles.weatherWidgetTemp}>{weather.temperature}°C</Text>
+                    <Text style={styles.weatherWidgetCondition}>{weather.condition}</Text>
+                    <Text style={styles.weatherWidgetLocation}>{weather.location}</Text>
+                  </View>
+                </View>
+                <View style={styles.weatherWidgetDetails}>
+                  <View style={styles.weatherWidgetDetailItem}>
+                    <Ionicons name="water-outline" size={16} color="#4CAF50" />
+                    <Text style={styles.weatherWidgetDetailText}>{weather.humidity}%</Text>
+                  </View>
+                  <View style={styles.weatherWidgetDetailItem}>
+                    <Ionicons name="umbrella-outline" size={16} color="#4CAF50" />
+                    <Text style={styles.weatherWidgetDetailText}>{weather.precipitation}%</Text>
+                  </View>
+                  <View style={styles.weatherWidgetDetailItem}>
+                    <Ionicons name="leaf-outline" size={16} color="#4CAF50" />
+                    <Text style={styles.weatherWidgetDetailText}>{weather.windSpeed} km/h</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+        
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           <TouchableOpacity style={styles.actionButton}>
@@ -613,6 +661,108 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
+  },
+  weatherWidgetContainer: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  weatherWidget: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  weatherWidgetHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  weatherWidgetTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  weatherWidgetContent: {
+    flex: 1,
+  },
+  weatherWidgetMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  weatherWidgetInfo: {
+    marginLeft: 16,
+  },
+  weatherWidgetTemp: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#212121',
+  },
+  weatherWidgetCondition: {
+    fontSize: 16,
+    color: '#424242',
+    marginBottom: 4,
+  },
+  weatherWidgetLocation: {
+    fontSize: 14,
+    color: '#757575',
+  },
+  weatherWidgetDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  weatherWidgetDetailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  weatherWidgetDetailText: {
+    fontSize: 14,
+    color: '#424242',
+    marginLeft: 4,
+  },
+  weatherWidgetLoading: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    height: 100,
+  },
+  weatherWidgetLoadingText: {
+    marginLeft: 8,
+    color: '#757575',
+  },
+  weatherWidgetError: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    height: 100,
+  },
+  weatherWidgetErrorText: {
+    marginLeft: 8,
+    color: '#757575',
   },
   welcomeText: {
     fontSize: 14,
