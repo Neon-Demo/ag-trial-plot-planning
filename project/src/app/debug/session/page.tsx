@@ -43,7 +43,7 @@ export default function DebugSession() {
       {status === "authenticated" && (
         <button
           onClick={handleGoToDashboard}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
         >
           Continue to Dashboard
         </button>

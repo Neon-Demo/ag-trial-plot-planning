@@ -95,9 +95,9 @@ export default function Trials() {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-blue-100 text-blue-800";
+        return "bg-green-100 text-green-800";
       case "PLANNED":
-        return "bg-blue-100 text-blue-800";
+        return "bg-green-100 text-green-800";
       case "COMPLETED":
         return "bg-gray-100 text-gray-800";
       case "CANCELLED":
