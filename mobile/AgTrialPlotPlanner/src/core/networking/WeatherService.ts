@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import * as Location from 'expo-location';
 
 // Constants - would normally be imported from environment variables
-const WEATHER_API_KEY = 'YOUR_API_KEY'; // Replace with actual OpenWeatherMap API key
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY || 'YOUR_API_KEY_HERE'; // Import from environment variables
 const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
 
 // Weather data types
