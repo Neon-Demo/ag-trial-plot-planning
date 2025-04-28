@@ -3,8 +3,8 @@ import { Alert } from 'react-native';
 import * as Location from 'expo-location';
 
 // Constants - would normally be imported from environment variables
-const WEATHER_API_KEY = 'YOUR_API_KEY'; // Replace with actual OpenWeatherMap API key
-const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
+const WEATHER_API_KEY = 'YOUR_API_KEY'; // Replace with actual AccuWeather API key
+const WEATHER_BASE_URL = 'https://dataservice.accuweather.com';
 
 // Weather data types
 export interface WeatherData {
@@ -26,45 +26,68 @@ export interface ForecastDay {
   icon: string;
 }
 
-// Helper function to convert OpenWeatherMap icon to Ionicons name
-const mapWeatherIconToIonicon = (iconCode: string): string => {
-  const iconMap: Record<string, string> = {
-    '01d': 'sunny', // clear sky day
-    '01n': 'moon', // clear sky night
-    '02d': 'partly-sunny', // few clouds day
-    '02n': 'cloudy-night', // few clouds night
-    '03d': 'cloudy', // scattered clouds
-    '03n': 'cloudy',
-    '04d': 'cloudy', // broken clouds
-    '04n': 'cloudy',
-    '09d': 'rainy', // shower rain
-    '09n': 'rainy',
-    '10d': 'rainy', // rain
-    '10n': 'rainy',
-    '11d': 'thunderstorm', // thunderstorm
-    '11n': 'thunderstorm',
-    '13d': 'snow', // snow
-    '13n': 'snow',
-    '50d': 'cloud', // mist
-    '50n': 'cloud',
+// Helper function to convert AccuWeather icon to Ionicons name
+const mapWeatherIconToIonicon = (iconCode: number): string => {
+  // AccuWeather has icon codes from 1-44
+  const iconMap: Record<number, string> = {
+    1: 'sunny', // Sunny
+    2: 'sunny', // Mostly Sunny
+    3: 'partly-sunny', // Partly Sunny
+    4: 'partly-sunny', // Intermittent Clouds
+    5: 'cloudy', // Hazy Sunshine
+    6: 'cloudy', // Mostly Cloudy
+    7: 'cloudy', // Cloudy
+    8: 'cloudy', // Dreary (Overcast)
+    11: 'cloudy', // Fog
+    12: 'rainy', // Showers
+    13: 'rainy', // Mostly Cloudy w/ Showers
+    14: 'partly-sunny', // Partly Sunny w/ Showers
+    15: 'thunderstorm', // Thunderstorms
+    16: 'thunderstorm', // Mostly Cloudy w/ Thunderstorms
+    17: 'thunderstorm', // Partly Sunny w/ Thunderstorms
+    18: 'rainy', // Rain
+    19: 'snow', // Flurries
+    20: 'snow', // Mostly Cloudy w/ Flurries
+    21: 'snow', // Partly Sunny w/ Flurries
+    22: 'snow', // Snow
+    23: 'snow', // Mostly Cloudy w/ Snow
+    24: 'snow', // Ice
+    25: 'rainy', // Sleet
+    26: 'rainy', // Freezing Rain
+    29: 'rainy', // Rain and Snow
+    30: 'sunny', // Hot
+    31: 'snow', // Cold
+    32: 'wind', // Windy
+    33: 'moon', // Clear (night)
+    34: 'moon', // Mostly Clear (night)
+    35: 'cloudy-night', // Partly Cloudy (night)
+    36: 'cloudy-night', // Intermittent Clouds (night)
+    37: 'cloudy-night', // Hazy Moonlight
+    38: 'cloudy-night', // Mostly Cloudy (night)
+    39: 'rainy', // Partly Cloudy w/ Showers (night)
+    40: 'rainy', // Mostly Cloudy w/ Showers (night)
+    41: 'thunderstorm', // Partly Cloudy w/ Thunderstorms (night)
+    42: 'thunderstorm', // Mostly Cloudy w/ Thunderstorms (night)
+    43: 'snow', // Mostly Cloudy w/ Flurries (night)
+    44: 'snow', // Mostly Cloudy w/ Snow (night)
   };
 
   return iconMap[iconCode] || 'help-circle';
 };
 
 // Format date for display
-const formatDay = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
+const formatDay = (date: string): string => {
+  const parsedDate = new Date(date);
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
   
-  if (date.toDateString() === today.toDateString()) {
+  if (parsedDate.toDateString() === today.toDateString()) {
     return 'Today';
-  } else if (date.toDateString() === tomorrow.toDateString()) {
+  } else if (parsedDate.toDateString() === tomorrow.toDateString()) {
     return 'Tomorrow';
   } else {
-    return date.toLocaleDateString('en-US', { weekday: 'short' });
+    return parsedDate.toLocaleDateString('en-US', { weekday: 'short' });
   }
 };
 
@@ -84,59 +107,58 @@ export const WeatherService = {
       const location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
       
-      // Make API request to OpenWeatherMap
-      const response = await axios.get(`${WEATHER_API_URL}/weather`, {
+      // First get location key from AccuWeather's API
+      const locationResponse = await axios.get(`${WEATHER_BASE_URL}/locations/v1/cities/geoposition/search`, {
         params: {
-          lat: latitude,
-          lon: longitude,
-          units: 'metric', // Use metric for Celsius
-          appid: WEATHER_API_KEY,
+          apikey: WEATHER_API_KEY,
+          q: `${latitude},${longitude}`,
+        },
+      });
+      
+      const locationKey = locationResponse.data.Key;
+      const locationName = locationResponse.data.LocalizedName;
+      
+      // Get current conditions
+      const currentResponse = await axios.get(`${WEATHER_BASE_URL}/currentconditions/v1/${locationKey}`, {
+        params: {
+          apikey: WEATHER_API_KEY,
+          details: true,
         },
       });
       
       // Get 5-day forecast
-      const forecastResponse = await axios.get(`${WEATHER_API_URL}/forecast`, {
+      const forecastResponse = await axios.get(`${WEATHER_BASE_URL}/forecasts/v1/daily/5day/${locationKey}`, {
         params: {
-          lat: latitude,
-          lon: longitude,
-          units: 'metric',
-          appid: WEATHER_API_KEY,
+          apikey: WEATHER_API_KEY,
+          metric: true,
         },
       });
       
-      // Process forecast data (get one entry per day)
+      // Process forecast data
+      const current = currentResponse.data[0];
       const dailyForecasts: ForecastDay[] = [];
-      const processedDays = new Set<string>();
       
-      // Start from index 1 to skip today (we already have today's weather)
-      for (let i = 1; i < forecastResponse.data.list.length && dailyForecasts.length < 3; i++) {
-        const item = forecastResponse.data.list[i];
-        const day = formatDay(item.dt);
-        
-        // Skip if we already have this day
-        if (processedDays.has(day)) continue;
-        
-        processedDays.add(day);
+      // Start from index 1 to skip today (we already have today's current weather)
+      for (let i = 1; i < forecastResponse.data.DailyForecasts.length && i <= 3; i++) {
+        const forecast = forecastResponse.data.DailyForecasts[i];
         dailyForecasts.push({
-          day,
-          high: Math.round(item.main.temp_max),
-          low: Math.round(item.main.temp_min),
-          icon: mapWeatherIconToIonicon(item.weather[0].icon),
+          day: formatDay(forecast.Date),
+          high: Math.round(forecast.Temperature.Maximum.Value),
+          low: Math.round(forecast.Temperature.Minimum.Value),
+          icon: mapWeatherIconToIonicon(forecast.Day.Icon),
         });
       }
       
       // Convert response to our WeatherData format
       const weatherData: WeatherData = {
-        location: response.data.name,
+        location: locationName,
         date: 'Today',
-        temperature: Math.round(response.data.main.temp),
-        condition: response.data.weather[0].main,
-        icon: mapWeatherIconToIonicon(response.data.weather[0].icon),
-        humidity: response.data.main.humidity,
-        precipitation: response.data.rain ? 
-          Math.round(response.data.rain['1h'] * 100) || 0 : 
-          Math.round(response.data.clouds.all / 5), // Rough estimate based on cloud cover if rain data isn't available
-        windSpeed: Math.round(response.data.wind.speed),
+        temperature: Math.round(current.Temperature.Metric.Value),
+        condition: current.WeatherText,
+        icon: mapWeatherIconToIonicon(current.WeatherIcon),
+        humidity: current.RelativeHumidity,
+        precipitation: current.HasPrecipitation ? 100 : current.PrecipitationProbability || 0,
+        windSpeed: Math.round(current.Wind.Speed.Metric.Value),
         forecast: dailyForecasts,
       };
       
@@ -150,61 +172,62 @@ export const WeatherService = {
   // Get weather for a specific location by name
   getWeatherByLocation: async (locationName: string): Promise<WeatherData | null> => {
     try {
-      // Make API request to OpenWeatherMap
-      const response = await axios.get(`${WEATHER_API_URL}/weather`, {
+      // Search for location
+      const searchResponse = await axios.get(`${WEATHER_BASE_URL}/locations/v1/cities/search`, {
         params: {
+          apikey: WEATHER_API_KEY,
           q: locationName,
-          units: 'metric', // Use metric for Celsius
-          appid: WEATHER_API_KEY,
         },
       });
       
-      // Get coordinates for forecast
-      const { lat, lon } = response.data.coord;
+      if (!searchResponse.data || searchResponse.data.length === 0) {
+        return null;
+      }
+      
+      const locationKey = searchResponse.data[0].Key;
+      const exactLocationName = searchResponse.data[0].LocalizedName;
+      
+      // Get current conditions
+      const currentResponse = await axios.get(`${WEATHER_BASE_URL}/currentconditions/v1/${locationKey}`, {
+        params: {
+          apikey: WEATHER_API_KEY,
+          details: true,
+        },
+      });
       
       // Get 5-day forecast
-      const forecastResponse = await axios.get(`${WEATHER_API_URL}/forecast`, {
+      const forecastResponse = await axios.get(`${WEATHER_BASE_URL}/forecasts/v1/daily/5day/${locationKey}`, {
         params: {
-          lat,
-          lon,
-          units: 'metric',
-          appid: WEATHER_API_KEY,
+          apikey: WEATHER_API_KEY,
+          metric: true,
         },
       });
       
-      // Process forecast data (get one entry per day)
+      // Process forecast data
+      const current = currentResponse.data[0];
       const dailyForecasts: ForecastDay[] = [];
-      const processedDays = new Set<string>();
       
-      // Start from index 1 to skip today (we already have today's weather)
-      for (let i = 1; i < forecastResponse.data.list.length && dailyForecasts.length < 3; i++) {
-        const item = forecastResponse.data.list[i];
-        const day = formatDay(item.dt);
-        
-        // Skip if we already have this day
-        if (processedDays.has(day)) continue;
-        
-        processedDays.add(day);
+      // Start from index 1 to skip today (we already have today's current weather)
+      for (let i = 1; i < forecastResponse.data.DailyForecasts.length && i <= 3; i++) {
+        const forecast = forecastResponse.data.DailyForecasts[i];
         dailyForecasts.push({
-          day,
-          high: Math.round(item.main.temp_max),
-          low: Math.round(item.main.temp_min),
-          icon: mapWeatherIconToIonicon(item.weather[0].icon),
+          day: formatDay(forecast.Date),
+          high: Math.round(forecast.Temperature.Maximum.Value),
+          low: Math.round(forecast.Temperature.Minimum.Value),
+          icon: mapWeatherIconToIonicon(forecast.Day.Icon),
         });
       }
       
       // Convert response to our WeatherData format
       const weatherData: WeatherData = {
-        location: response.data.name,
+        location: exactLocationName,
         date: 'Today',
-        temperature: Math.round(response.data.main.temp),
-        condition: response.data.weather[0].main,
-        icon: mapWeatherIconToIonicon(response.data.weather[0].icon),
-        humidity: response.data.main.humidity,
-        precipitation: response.data.rain ? 
-          Math.round(response.data.rain['1h'] * 100) || 0 : 
-          Math.round(response.data.clouds.all / 5), // Rough estimate based on cloud cover if rain data isn't available
-        windSpeed: Math.round(response.data.wind.speed),
+        temperature: Math.round(current.Temperature.Metric.Value),
+        condition: current.WeatherText,
+        icon: mapWeatherIconToIonicon(current.WeatherIcon),
+        humidity: current.RelativeHumidity,
+        precipitation: current.HasPrecipitation ? 100 : current.PrecipitationProbability || 0,
+        windSpeed: Math.round(current.Wind.Speed.Metric.Value),
         forecast: dailyForecasts,
       };
       
