@@ -130,7 +130,7 @@ export default function AuthenticatedLayout({
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-light-green">
+    <div className="h-screen flex overflow-hidden bg-dark-background dark:text-dark-text-primary">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -148,7 +148,7 @@ export default function AuthenticatedLayout({
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
-        <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-primary">
+        <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-dark-surface border-r border-dark-border">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -202,7 +202,7 @@ export default function AuthenticatedLayout({
             </nav>
           </div>
 
-          <div className="flex-shrink-0 flex border-t border-primary-dark p-4">
+          <div className="flex-shrink-0 flex border-t border-dark-border p-4">
             <div className="flex-shrink-0 group block">
               <div className="flex items-center">
                 <div className="relative">
@@ -246,7 +246,7 @@ export default function AuthenticatedLayout({
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
-            <div className="flex items-center h-16 flex-shrink-0 px-4 bg-primary">
+            <div className="flex items-center h-16 flex-shrink-0 px-4 bg-dark-surface border-b border-dark-border">
               <div className="h-8 w-8 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 50 L40 70 L80 30" stroke="white" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -256,7 +256,7 @@ export default function AuthenticatedLayout({
               </div>
               <span className="ml-2 text-xl font-bold text-white">AgTrial</span>
             </div>
-            <div className="flex-1 flex flex-col overflow-y-auto bg-primary">
+            <div className="flex-1 flex flex-col overflow-y-auto bg-dark-surface border-r border-dark-border">
               <nav className="flex-1 px-2 py-4 space-y-1">
                 {filteredLinks.map((link) => (
                   <Link
@@ -274,7 +274,7 @@ export default function AuthenticatedLayout({
                 ))}
               </nav>
             </div>
-            <div className="flex-shrink-0 flex border-t border-primary-dark p-4 bg-primary">
+            <div className="flex-shrink-0 flex border-t border-dark-border p-4 bg-dark-surface">
               <div className="flex-shrink-0 w-full group block">
                 <div className="flex items-center">
                   <div className="relative">
@@ -314,10 +314,10 @@ export default function AuthenticatedLayout({
 
       {/* Main content */}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow md:hidden">
+        <div className="relative z-10 flex-shrink-0 flex h-16 bg-dark-surface border-b border-dark-border shadow md:hidden">
           <button
             type="button"
-            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary md:hidden"
+            className="px-4 border-r border-dark-border text-dark-text-primary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary md:hidden"
             onClick={toggleSidebar}
           >
             <span className="sr-only">Open sidebar</span>
@@ -340,7 +340,7 @@ export default function AuthenticatedLayout({
           <div className="flex-1 px-4 flex justify-between">
             <div className="flex-1 flex">
               <div className="w-full flex items-center">
-                <div className="text-xl font-semibold text-gray-900">
+                <div className="text-xl font-semibold text-dark-text-primary">
                   {pathname === "/dashboard"
                     ? "Dashboard"
                     : pathname.split("/").pop() 
@@ -353,7 +353,7 @@ export default function AuthenticatedLayout({
           </div>
         </div>
 
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">
+        <main className="flex-1 relative overflow-y-auto focus:outline-none bg-dark-background">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
               {children}
