@@ -1,11 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useToast } from "@/components/toast-provider";
 
 export default function Home() {
+  const { showToast } = useToast();
+  
+  useEffect(() => {
+    showToast("You are at the index page", "info");
+  }, [showToast]);
+  
   return (
-    <div className="min-h-screen bg-dark-green-500">
+    <div className="min-h-screen bg-emerald-500">
       {/* Header */}
-      <header className="bg-dark-green-600 shadow-md">
+      <header className="bg-emerald-600 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <div className="h-8 w-8 flex items-center justify-center">
@@ -29,7 +39,7 @@ export default function Home() {
       </header>
 
       {/* Hero section */}
-      <div className="bg-gradient-to-b from-dark-green-500 to-white py-16 md:py-24">
+      <div className="bg-gradient-to-b from-emerald-500 to-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:space-x-8">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -71,7 +81,7 @@ export default function Home() {
       </div>
 
       {/* Features section */}
-      <section id="features" className="py-16 md:py-24 bg-dark-green-100">
+      <section id="features" className="py-16 md:py-24 bg-emerald-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Key Features
@@ -155,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* CTA section */}
-      <section className="bg-dark-green-600 py-16">
+      <section className="bg-emerald-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to streamline your agricultural research?
@@ -174,7 +184,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-dark-green-700 text-white py-12">
+      <footer className="bg-emerald-700 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
