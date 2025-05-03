@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/lib/auth-provider";
 import ToastProvider from "@/components/toast-provider";
+import { ThemeProvider } from "@/lib/theme-context";
 
 // Configure Inter font with fallbacks and preloading disabled
 const inter = Inter({ 
@@ -37,9 +38,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

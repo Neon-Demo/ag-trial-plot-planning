@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+    --primary: 20 184 166;
+    --primary-foreground: 255 255 255;
+    --secondary: 233 196 106;
+    --secondary-foreground: 0 0 0;
+    --accent: 231 111 81;
+    --accent-foreground: 255 255 255;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 20 184 166;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 241 245 249;
+    --card: 30 41 59;
+    --card-foreground: 241 245 249;
+    --popover: 30 41 59;
+    --popover-foreground: 241 245 249;
+    --primary: 20 184 166;
+    --primary-foreground: 255 255 255;
+    --secondary: 233 196 106;
+    --secondary-foreground: 0 0 0;
+    --accent: 231 111 81;
+    --accent-foreground: 255 255 255;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 20 184 166;
+  }
+}
+
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 6px;
@@ -34,18 +72,18 @@
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-secondary text-gray-800 rounded-md hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 transition duration-150 ease-in-out;
+    @apply px-4 py-2 bg-secondary text-gray-800 dark:text-gray-100 rounded-md hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 transition duration-150 ease-in-out;
   }
   
   .btn-outline {
-    @apply px-4 py-2 border border-dark-green-500 text-dark-green-500 rounded-md hover:bg-dark-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-dark-green-400 focus:ring-opacity-50 transition duration-150 ease-in-out;
+    @apply px-4 py-2 border border-dark-green-500 text-dark-green-500 dark:text-dark-green-300 rounded-md hover:bg-dark-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-dark-green-400 focus:ring-opacity-50 transition duration-150 ease-in-out;
   }
   
   .input-field {
-    @apply px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green-400 focus:border-dark-green-500;
+    @apply px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green-400 focus:border-dark-green-500;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-md p-6;
   }
 }
