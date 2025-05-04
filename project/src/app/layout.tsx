@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/lib/auth-provider";
+import { DatabaseProvider } from "@/lib/db-provider";
 import ToastProvider from "@/components/toast-provider";
 
 // Configure Inter font with fallbacks and preloading disabled
@@ -36,11 +37,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </AuthProvider>
+        <DatabaseProvider>
+          <AuthProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </AuthProvider>
+        </DatabaseProvider>
       </body>
     </html>
   );
