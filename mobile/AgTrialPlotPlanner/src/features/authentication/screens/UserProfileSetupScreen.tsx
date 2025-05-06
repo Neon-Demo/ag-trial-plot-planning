@@ -368,7 +368,7 @@ const UserProfileSetupScreen = ({ route }: UserProfileSetupScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFC107', // Orange-yellow color for Issue #80
   },
   keyboardAvoidingView: {
     flex: 1,
