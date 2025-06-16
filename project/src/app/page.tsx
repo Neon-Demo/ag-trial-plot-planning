@@ -33,7 +33,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:space-x-8">
             <div className="md:w-1/2 mb-10 md:mb-0">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold text-teal-900 mb-4">
                 Agricultural Trial Plot Planning & Data Collection
               </h1>
               <p className="text-lg md:text-xl text-gray-700 mb-8">
