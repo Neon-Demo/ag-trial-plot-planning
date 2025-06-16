@@ -56,7 +56,11 @@ Follow the Expo instructions to run on a simulator or physical device.
 
 ## Contributors
 
-This project is developed and maintained by a team dedicated to improving agricultural field trial efficiency.
+This project is developed and maintained by a team dedicated to improving agricultural field trial efficiency:
+
+- Joe
+- Muhamed
+- Sze
 
 ## License
 
