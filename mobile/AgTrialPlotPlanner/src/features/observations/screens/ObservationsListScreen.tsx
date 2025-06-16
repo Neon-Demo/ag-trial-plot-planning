@@ -555,7 +555,7 @@ const ScrollableFilter = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFC107', // Orange-yellow color for Issue #80
   },
   filterContainer: {
     backgroundColor: 'white',

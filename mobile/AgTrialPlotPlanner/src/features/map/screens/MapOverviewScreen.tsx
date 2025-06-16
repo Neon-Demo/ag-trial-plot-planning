@@ -395,6 +395,7 @@ const MapOverviewScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFC107', // Orange-yellow color for Issue #80
   },
   mapContainer: {
     flex: 1,
