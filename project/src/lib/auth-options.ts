@@ -1,7 +1,9 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { DEMO_USERS } from "./demo-data";
 import { UserRole } from "@prisma/client";
+import { db } from "./db";
 
 // Force NextAuth to use the correct URL whether running locally or in production
 const getBaseUrl = () => {
@@ -18,6 +20,9 @@ const getBaseUrl = () => {
 export const authOptions: NextAuthOptions = {
   // Use the dynamically determined URL
   baseUrl: getBaseUrl(),
+  
+  // Use PrismaAdapter for database persistence
+  adapter: PrismaAdapter(db),
   
   providers: [
     // Demo credentials provider
